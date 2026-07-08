@@ -68,8 +68,13 @@ namespace ElearningPlatform.Application.Features.Courses.Commands.CreateCourse
                 Status = CourseStatus.Draft,
                 
             };
+    
             instructor.TotalCourses++;
+
+           
             await unitOfWork.Courses.AddAsync(course);
+      
+        
             await unitOfWork.SaveAsync();
             return Result<int>.Success(course.Id);
         }
