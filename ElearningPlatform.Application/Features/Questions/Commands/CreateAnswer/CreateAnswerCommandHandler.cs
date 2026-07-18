@@ -77,7 +77,7 @@ namespace ElearningPlatform.Application.Features.Questions.Commands.CreateAnswer
                 IsCorrect = request.IsCorrect,
                 OrderIndex = orderIndex + 1,
 
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = currentUserService.UserName
             };
 

@@ -12,23 +12,33 @@ namespace ElearningPlatform.Domain.Models
     {
         public int AssignmentId { get; set; }
 
-        public string StudentId { get; set; }
+        public string StudentId { get; set; } = null!;
 
-        public string FileUrl { get; set; }
+     
+        public string FileUrl { get; set; } = string.Empty;
 
-        public int Score { get; set; }
+       
+        public string? Comment { get; set; }
 
-        public string Feedback { get; set; }
+      
+        public int? Score { get; set; }
 
+        // تعليقات المعلم على التسليم
+        public string? Feedback { get; set; }
+
+      
         public DateTime SubmittedAt { get; set; }
 
+    
         public DateTime? GradedAt { get; set; }
+
+     
+        public bool IsLate { get; set; }
 
         public SubmissionStatus Status { get; set; }
 
+        public Assignment Assignment { get; set; } = null!;
 
-        public Assignment Assignment { get; set; }
-
-        public ApplicationUser Student { get; set; }
+        public ApplicationUser Student { get; set; } = null!;
     }
 }
