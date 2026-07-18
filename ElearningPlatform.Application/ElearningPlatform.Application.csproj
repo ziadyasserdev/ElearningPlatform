@@ -13,8 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Assignments\Dtos\" />
-    <Folder Include="Features\Assignments\Queries\" />
     <Folder Include="Features\Authentications\Queries\" />
   </ItemGroup>
 

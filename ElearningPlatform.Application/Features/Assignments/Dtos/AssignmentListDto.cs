@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace ElearningPlatform.Application.Features.Assignments.Dtos
 {
-    public class AssignmentDetailsDto
+    public class AssignmentListDto
     {
         public int Id { get; set; }
 
         public string Title { get; set; } = string.Empty;
-
-        public string Description { get; set; } = string.Empty;
 
         public int MaxScore { get; set; }
 
@@ -20,11 +18,7 @@ namespace ElearningPlatform.Application.Features.Assignments.Dtos
 
         public DateTime DueDate { get; set; }
 
-        public bool AllowLateSubmission { get; set; }
-
         public bool IsPublished { get; set; }
-
-        public string CourseTitle { get; set; } = string.Empty;
 
         public int SubmissionCount { get; set; }
     }
