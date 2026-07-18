@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentById;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
 using FluentValidation;
@@ -77,6 +78,26 @@ namespace ElearningPlatform.Api.Controllers
                 pageSize);
 
             var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpPut("{id:int}")]
+        [SwaggerOperation(
+    Summary = "Update assignment",
+    Description = "Updates an existing assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateAssignment(
+    int id,
+    [FromBody] UpdateAssignmentCommand command)
+        {
+            command = command with { Id = id };
+
+            var result = await mediator.Send(command);
 
             return result.ToActionResult();
         }

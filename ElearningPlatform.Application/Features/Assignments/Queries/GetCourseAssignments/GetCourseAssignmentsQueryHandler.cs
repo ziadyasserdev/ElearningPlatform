@@ -19,21 +19,34 @@ namespace ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAs
         Result<PaginatedResult<AssignmentListDto>>>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICurrentUserService currentUserService;
 
-        public GetCourseAssignmentsQueryHandler(IUnitOfWork unitOfWork)
+        public GetCourseAssignmentsQueryHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService)
         {
             this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
         }
 
         public async Task<Result<PaginatedResult<AssignmentListDto>>> Handle(
             GetCourseAssignmentsQuery request,
             CancellationToken cancellationToken)
         {
+            
+            if(!currentUserService.IsAuthenticated)
+                return Result<PaginatedResult<AssignmentListDto>>
+                    .Failure(ResultStatus.Unauthorized, "User is not authenticated.");
+            var userId = currentUserService.UserId;
+
+
             var courseExists = await unitOfWork.Courses
                 .Query()
                 .AnyAsync(c =>
                     c.Id == request.CourseId &&
-                    !c.IsDeleted,
+                    !c.IsDeleted &&
+                    c.IsActive &&
+                    c.Instructor.UserId == userId,
+              
+
                     cancellationToken);
 
             if (!courseExists)
