@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.DeleteAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentById;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
@@ -96,6 +97,24 @@ namespace ElearningPlatform.Api.Controllers
     [FromBody] UpdateAssignmentCommand command)
         {
             command = command with { Id = id };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpDelete("{id:int}")]
+        [SwaggerOperation(
+    Summary = "Delete assignment",
+    Description = "Deletes an existing assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAssignment(int id)
+        {
+            var command = new DeleteAssignmentCommand(id);
 
             var result = await mediator.Send(command);
 

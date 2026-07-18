@@ -13,8 +13,9 @@ using System.Threading.Tasks;
 
 namespace ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment
 {
+
     public class UpdateAssignmentCommandHandler
-     : IRequestHandler<UpdateAssignmentCommand, Result<string>>
+        : IRequestHandler<UpdateAssignmentCommand, Result<string>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
@@ -56,6 +57,7 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssi
                     "Assignment not found.");
             }
 
+          
             if (assignment.Course.Instructor.UserId != userId)
             {
                 return Result<string>.Failure(
@@ -63,11 +65,12 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssi
                     "You are not authorized to update this assignment.");
             }
 
+         
             var titleExists = await unitOfWork.Assignments
                 .Query()
                 .AnyAsync(a =>
                     a.CourseId == assignment.CourseId &&
-                    a.Id != request.Id &&
+                    a.Id != assignment.Id &&
                     a.Title == request.Title &&
                     !a.IsDeleted,
                     cancellationToken);
@@ -79,14 +82,43 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssi
                     "Assignment title already exists.");
             }
 
-            assignment.Title = request.Title;
-            assignment.Description = request.Description;
-            assignment.MaxScore = request.MaxScore;
-            assignment.OpenAt = request.OpenAt;
-            assignment.DueDate = request.DueDate;
-            assignment.AllowLateSubmission = request.AllowLateSubmission;
+           
+            var hasSubmissions = await unitOfWork.Submissions
+                .Query()
+                .AnyAsync(s =>
+                    s.AssignmentId == assignment.Id &&
+                    !s.IsDeleted,
+                    cancellationToken);
 
-            assignment.UpdatedAt = DateTime.Now;
+            if (hasSubmissions)
+            {
+              
+                if (assignment.MaxScore != request.MaxScore ||
+                    assignment.OpenAt != request.OpenAt ||
+                    assignment.DueDate != request.DueDate)
+                {
+                    return Result<string>.Failure(
+                        ResultStatus.Failure,
+                        "Max score, open date and due date cannot be modified because students have already submitted.");
+                }
+
+            
+                assignment.Title = request.Title;
+                assignment.Description = request.Description;
+                assignment.AllowLateSubmission = request.AllowLateSubmission;
+            }
+            else
+            {
+              
+                assignment.Title = request.Title;
+                assignment.Description = request.Description;
+                assignment.MaxScore = request.MaxScore;
+                assignment.OpenAt = request.OpenAt;
+                assignment.DueDate = request.DueDate;
+                assignment.AllowLateSubmission = request.AllowLateSubmission;
+            }
+
+            assignment.UpdatedAt = DateTime.UtcNow;
             assignment.UpdatedBy = currentUserService.UserName;
 
             await unitOfWork.SaveAsync();
