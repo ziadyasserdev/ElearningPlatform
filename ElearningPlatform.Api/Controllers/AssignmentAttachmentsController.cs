@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.DeleteAssignmentAttachment;
+using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.RenameAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.ReplaceAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.UploadAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.DownloadAssignmentAttachment;
@@ -119,6 +120,26 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> ReplaceAssignmentAttachment(
     int id,
     [FromForm] ReplaceAssignmentAttachmentCommand command)
+        {
+            command = command with { Id = id };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("attachments/{id:int}/rename")]
+        [SwaggerOperation(
+    Summary = "Rename assignment attachment",
+    Description = "Renames an existing assignment attachment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RenameAssignmentAttachment(
+    int id,
+    [FromBody] RenameAssignmentAttachmentCommand command)
         {
             command = command with { Id = id };
 
