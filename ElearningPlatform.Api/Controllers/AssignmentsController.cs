@@ -10,7 +10,9 @@ using ElearningPlatform.Application.Features.Assignments.Commands.UnPublishAssig
 using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentById;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentStatistics;
+using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentSubmissions;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
+using ElearningPlatform.Domain.Enums;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -249,6 +251,32 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetAssignmentStatistics(int id)
         {
             var query = new GetAssignmentStatisticsQuery(id);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{assignmentId:int}/submissions")]
+        [SwaggerOperation(
+    Summary = "Get assignment submissions",
+    Description = "Retrieves a paginated list of submissions for a specific assignment with optional search and status filters."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAssignmentSubmissions(
+    int assignmentId,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string? search = null,
+    [FromQuery] SubmissionStatus? status = null)
+        {
+            var query = new GetAssignmentSubmissionsQuery(
+                assignmentId,
+                pageNumber,
+                pageSize,
+                search,
+                status);
 
             var result = await mediator.Send(query);
 
