@@ -12,6 +12,7 @@ using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentBy
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentStatistics;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentSubmissions;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
+using ElearningPlatform.Application.Features.Assignments.Queries.GetLateSubmissions;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetPendingStudents;
 using ElearningPlatform.Domain.Enums;
 using FluentValidation;
@@ -298,6 +299,30 @@ namespace ElearningPlatform.Api.Controllers
         {
             var query = new GetPendingStudentsQuery(
                 assignmentId,
+                pageNumber,
+                pageSize);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{assignmentId:int}/late-submissions")]
+        [SwaggerOperation(
+    Summary = "Get late submissions",
+    Description = "Retrieves a paginated list of late submissions for a specific assignment with an optional search filter."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetLateSubmissions(
+    int assignmentId,
+    [FromQuery] string? search,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+        {
+            var query = new GetLateSubmissionsQuery(
+                assignmentId,
+                search,
                 pageNumber,
                 pageSize);
 
