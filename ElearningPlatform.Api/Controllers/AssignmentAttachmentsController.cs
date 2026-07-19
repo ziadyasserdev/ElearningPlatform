@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.UploadAssignmentAttachment;
+using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.GetAssignmentAttachments;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,26 @@ namespace ElearningPlatform.Api.Controllers
             command = command with { AssignmentId = assignmentId };
 
             var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+
+        [HttpGet("{assignmentId:int}/attachments")]
+        [SwaggerOperation(
+    Summary = "Get assignment attachments",
+    Description = "Retrieves all attachments for a specific assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAssignmentAttachments(int assignmentId)
+        {
+            var query = new GetAssignmentAttachmentsQuery
+            {
+                AssignmentId = assignmentId
+            };
+
+            var result = await mediator.Send(query);
 
             return result.ToActionResult();
         }
