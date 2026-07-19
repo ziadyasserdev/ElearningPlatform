@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.DeleteAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.RestoreAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentById;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
@@ -115,6 +116,24 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> DeleteAssignment(int id)
         {
             var command = new DeleteAssignmentCommand(id);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id:int}/restore")]
+        [SwaggerOperation(
+    Summary = "Restore assignment",
+    Description = "Restores a previously deleted assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RestoreAssignment(int id)
+        {
+            var command = new RestoreAssignmentCommand(id);
 
             var result = await mediator.Send(command);
 
