@@ -14,6 +14,7 @@ using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentSu
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetLateSubmissions;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetPendingStudents;
+using ElearningPlatform.Application.Features.Assignments.Queries.GetTopStudents;
 using ElearningPlatform.Domain.Enums;
 using FluentValidation;
 using MediatR;
@@ -325,6 +326,26 @@ namespace ElearningPlatform.Api.Controllers
                 search,
                 pageNumber,
                 pageSize);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{assignmentId:int}/top-students")]
+        [SwaggerOperation(
+    Summary = "Get top students",
+    Description = "Retrieves the top students for a specific assignment based on their scores."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetTopStudents(
+    int assignmentId,
+    [FromQuery] int count = 10)
+        {
+            var query = new GetAssignmentTopStudentsQuery(
+                assignmentId,
+                count);
 
             var result = await mediator.Send(query);
 
