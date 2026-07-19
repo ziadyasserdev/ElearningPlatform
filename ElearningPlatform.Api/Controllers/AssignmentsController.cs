@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Assignments.Commands.CloseAssignmen
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.DeleteAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.PublishAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.ReopenAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.RestoreAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.UnPublishAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
@@ -192,6 +193,24 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> CloseAssignment(int id)
         {
             var command = new CloseAssignmentCommand(id);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id:int}/reopen")]
+        [SwaggerOperation(
+    Summary = "Reopen assignment",
+    Description = "Reopens a closed assignment and allows submissions again."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ReopenAssignment(int id)
+        {
+            var command = new ReopenAssignmentCommand(id);
 
             var result = await mediator.Send(command);
 
