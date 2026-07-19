@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.DeleteAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.UploadAssignmentAttachment;
+using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.DownloadAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.GetAssignmentAttachments;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -78,6 +79,29 @@ namespace ElearningPlatform.Api.Controllers
             var result = await mediator.Send(command);
 
             return result.ToActionResult();
+        }
+        [HttpGet("{id:int}/download")]
+        [SwaggerOperation(
+      Summary = "Download assignment attachment",
+      Description = "Downloads a specific assignment attachment."
+  )]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Download(int id)
+        {
+            var result = await mediator.Send(
+                new DownloadAssignmentAttachmentQuery(id));
+            if(!result.IsSuccess)
+            {
+                return result.ToActionResult();
+            }
+
+
+            return File(
+                result.Value!.FileBytes,
+                result.Value.ContentType,
+                result.Value.FileName);
         }
     }
 }
