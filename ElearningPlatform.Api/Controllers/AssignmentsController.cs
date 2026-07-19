@@ -1,4 +1,5 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
+using ElearningPlatform.Application.Features.Assignments.Commands.CloseAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.DeleteAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.PublishAssignment;
@@ -172,6 +173,25 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> UnPublishAssignment(int id)
         {
             var command = new UnPublishAssignmentCommand(id);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+
+        [HttpPatch("{id:int}/close")]
+        [SwaggerOperation(
+    Summary = "Close assignment",
+    Description = "Closes an assignment and prevents further submissions."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CloseAssignment(int id)
+        {
+            var command = new CloseAssignmentCommand(id);
 
             var result = await mediator.Send(command);
 
