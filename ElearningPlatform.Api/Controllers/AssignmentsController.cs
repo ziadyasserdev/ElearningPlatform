@@ -1,7 +1,9 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.DeleteAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.PublishAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.RestoreAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.UnPublishAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentById;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
@@ -134,6 +136,42 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> RestoreAssignment(int id)
         {
             var command = new RestoreAssignmentCommand(id);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id:int}/publish")]
+        [SwaggerOperation(
+    Summary = "Publish assignment",
+    Description = "Publishes an assignment, making it available to students."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PublishAssignment(int id)
+        {
+            var command = new PublishAssignmentCommand(id);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id:int}/unpublish")]
+        [SwaggerOperation(
+    Summary = "Unpublish assignment",
+    Description = "Unpublishes an assignment, making it unavailable to students."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UnPublishAssignment(int id)
+        {
+            var command = new UnPublishAssignmentCommand(id);
 
             var result = await mediator.Send(command);
 

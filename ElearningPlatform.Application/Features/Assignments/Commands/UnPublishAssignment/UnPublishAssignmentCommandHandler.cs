@@ -9,15 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElearningPlatform.Application.Features.Assignments.Commands.PublishAssignment
+namespace ElearningPlatform.Application.Features.Assignments.Commands.UnPublishAssignment
 {
-    public class PublishAssignmentCommandHandler
-      : IRequestHandler<PublishAssignmentCommand, Result<string>>
+    public class UnPublishAssignmentCommandHandler
+     : IRequestHandler<UnPublishAssignmentCommand, Result<string>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
 
-        public PublishAssignmentCommandHandler(
+        public UnPublishAssignmentCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService)
         {
@@ -26,7 +26,7 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.PublishAss
         }
 
         public async Task<Result<string>> Handle(
-            PublishAssignmentCommand request,
+            UnPublishAssignmentCommand request,
             CancellationToken cancellationToken)
         {
             if (!currentUserService.IsAuthenticated)
@@ -58,59 +58,39 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.PublishAss
             {
                 return Result<string>.Failure(
                     ResultStatus.Forbidden,
-                    "You are not authorized to publish this assignment.");
+                    "You are not authorized to unpublish this assignment.");
             }
 
-            if (assignment.IsPublished)
+            if (!assignment.IsPublished)
             {
                 return Result<string>.Failure(
                     ResultStatus.Conflict,
-                    "Assignment is already published.");
+                    "Assignment is already unpublished.");
             }
 
-            if (assignment.OpenAt >= assignment.DueDate)
+            var hasSubmissions = await unitOfWork.Submissions
+                .Query()
+                .AnyAsync(s =>
+                    s.AssignmentId == assignment.Id &&
+                    !s.IsDeleted,
+                    cancellationToken);
+
+            if (hasSubmissions)
             {
                 return Result<string>.Failure(
                     ResultStatus.Failure,
-                    "Open date must be earlier than due date.");
+                    "Assignment cannot be unpublished because students have already submitted.");
             }
 
-            if (assignment.DueDate <= DateTime.Now)
-            {
-                return Result<string>.Failure(
-                    ResultStatus.Failure,
-                    "Assignment due date has already passed.");
-            }
-
-            if (assignment.MaxScore <= 0)
-            {
-                return Result<string>.Failure(
-                    ResultStatus.Failure,
-                    "Assignment max score must be greater than zero.");
-            }
-
-            if (string.IsNullOrWhiteSpace(assignment.Title))
-            {
-                return Result<string>.Failure(
-                    ResultStatus.Failure,
-                    "Assignment title is required.");
-            }
-
-            if (string.IsNullOrWhiteSpace(assignment.Description))
-            {
-                return Result<string>.Failure(
-                    ResultStatus.Failure,
-                    "Assignment description is required.");
-            }
-
-            assignment.IsPublished = true;
+            assignment.IsPublished = false;
          
+
             assignment.UpdatedAt = DateTime.Now;
             assignment.UpdatedBy = currentUserService.UserName;
 
             await unitOfWork.SaveAsync();
 
-            return Result<string>.Success("Assignment published successfully.");
+            return Result<string>.Success("Assignment unpublished successfully.");
         }
     }
 }

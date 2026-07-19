@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElearningPlatform.Application.Features.Assignments.Commands.PublishAssignment
+namespace ElearningPlatform.Application.Features.Assignments.Commands.UnPublishAssignment
 {
-    public record PublishAssignmentCommand(int Id)
+    public record UnPublishAssignmentCommand(int Id)
     : IRequest<Result<string>>;
 }
