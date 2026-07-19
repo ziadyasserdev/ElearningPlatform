@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.DeleteAssignmentAttachment;
+using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.ReplaceAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.UploadAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.DownloadAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.GetAssignmentAttachments;
@@ -102,6 +103,28 @@ namespace ElearningPlatform.Api.Controllers
                 result.Value!.FileBytes,
                 result.Value.ContentType,
                 result.Value.FileName);
+        }
+
+        [HttpPut("attachments/{id:int}")]
+        [SwaggerOperation(
+    Summary = "Replace assignment attachment",
+    Description = "Replaces an existing assignment attachment with a new file."
+)]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ReplaceAssignmentAttachment(
+    int id,
+    [FromForm] ReplaceAssignmentAttachmentCommand command)
+        {
+            command = command with { Id = id };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
         }
     }
 }
