@@ -28,13 +28,21 @@ namespace ElearningPlatform.Domain.Models
 
        
         public bool AllowLateSubmission { get; set; }
+        public DateTime? PublishedAt { get; set; }
 
-       
-        public string? AttachmentUrl { get; set; }
+        public bool IsClosed { get; set; } = false;
+
+        public DateTime? ClosedAt { get; set; }
+
+        public string? ClosedBy { get; set; }
+
+      
 
         public Course Course { get; set; } = null!;
 
         public ICollection<Submission> Submissions { get; set; }
             = new List<Submission>();
+        public ICollection<AssignmentAttachment> Attachments { get; set; }
+    = new List<AssignmentAttachment>();
     }
 }

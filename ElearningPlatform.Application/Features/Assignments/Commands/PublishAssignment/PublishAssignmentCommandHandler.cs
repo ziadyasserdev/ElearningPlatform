@@ -104,7 +104,7 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.PublishAss
             }
 
             assignment.IsPublished = true;
-         
+         assignment.PublishedAt = DateTime.Now;
             assignment.UpdatedAt = DateTime.Now;
             assignment.UpdatedBy = currentUserService.UserName;
 

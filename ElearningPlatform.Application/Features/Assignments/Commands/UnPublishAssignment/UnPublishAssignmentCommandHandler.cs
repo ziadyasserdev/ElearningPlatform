@@ -83,7 +83,7 @@ namespace ElearningPlatform.Application.Features.Assignments.Commands.UnPublishA
             }
 
             assignment.IsPublished = false;
-         
+            assignment.PublishedAt = null;
 
             assignment.UpdatedAt = DateTime.Now;
             assignment.UpdatedBy = currentUserService.UserName;

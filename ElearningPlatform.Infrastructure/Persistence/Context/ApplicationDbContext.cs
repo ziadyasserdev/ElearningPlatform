@@ -42,6 +42,7 @@ namespace ElearningPlatform.Infrastructure.Persistence.Context
         public DbSet<Notification> Notifications { get; set; }
        public DbSet<VideoProgress> VideoProgresses { get; set; }
         public DbSet<VideoComment> VideoComments { get; set; }
-
-        }
+        public DbSet<AssignmentAttachment> AssignmentAttachments { get; set; }
+    
+    }
 }
