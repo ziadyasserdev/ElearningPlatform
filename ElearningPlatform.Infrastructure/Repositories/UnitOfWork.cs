@@ -45,9 +45,12 @@ namespace ElearningPlatform.Infrastructure.Repositories
 
         public IAnswerRepository Answers { get; private set; }
 
+        public IAssignmentAttachmentRepository AssignmentAttachments { get;private set; }   
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
+            AssignmentAttachments = new AssignmentAttachmentRepository(_context);
             Answers = new AnswerRepository(_context);
             Questions = new QuestionsRepository(_context);
             ExamAttempts = new ExamAttemptsRepository(_context);
