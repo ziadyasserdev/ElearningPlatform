@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Features.Assignments.Commands.CloseAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.CreateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.DeleteAssignment;
+using ElearningPlatform.Application.Features.Assignments.Commands.ExtendAssignmentDeadline;
 using ElearningPlatform.Application.Features.Assignments.Commands.PublishAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.ReopenAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.RestoreAssignment;
@@ -211,6 +212,26 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> ReopenAssignment(int id)
         {
             var command = new ReopenAssignmentCommand(id);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id:int}/extend-deadline")]
+        [SwaggerOperation(
+    Summary = "Extend assignment deadline",
+    Description = "Extends the due date of an existing assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ExtendAssignmentDeadline(
+    int id,
+    [FromBody] ExtendAssignmentDeadlineCommand command)
+        {
+            command = command with { Id = id };
 
             var result = await mediator.Send(command);
 
