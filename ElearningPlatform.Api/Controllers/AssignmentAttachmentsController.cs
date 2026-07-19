@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Services;
+using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.DeleteAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Commands.UploadAssignmentAttachment;
 using ElearningPlatform.Application.Features.AssignmentAttachments.Queries.GetAssignmentAttachments;
 using MediatR;
@@ -57,6 +58,24 @@ namespace ElearningPlatform.Api.Controllers
             };
 
             var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpDelete("attachments/{id:int}")]
+        [SwaggerOperation(
+    Summary = "Delete assignment attachment",
+    Description = "Deletes an attachment from an assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAssignmentAttachment(int id)
+        {
+            var command = new DeleteAssignmentAttachmentCommand(id);
+
+            var result = await mediator.Send(command);
 
             return result.ToActionResult();
         }
