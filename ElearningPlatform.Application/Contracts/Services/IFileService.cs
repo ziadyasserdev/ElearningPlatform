@@ -12,7 +12,7 @@ namespace ElearningPlatform.Application.Contracts.Services
     {
         Task<Result<string>> UploadImageAsync(IFormFile file);
         Task<Result<string>> UploadVideoAsync(IFormFile file);
-     
+        Task<Result<string>> UploadFileAsync(IFormFile file);
         Result<string> Remove(string url);
         Task<Result<byte[]>> DownloadFileAsync(string url);
     }
