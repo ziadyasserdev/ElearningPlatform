@@ -9,6 +9,7 @@ using ElearningPlatform.Application.Features.Assignments.Commands.RestoreAssignm
 using ElearningPlatform.Application.Features.Assignments.Commands.UnPublishAssignment;
 using ElearningPlatform.Application.Features.Assignments.Commands.UpdateAssignment;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentById;
+using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentStatistics;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
 using FluentValidation;
 using MediatR;
@@ -234,6 +235,22 @@ namespace ElearningPlatform.Api.Controllers
             command = command with { Id = id };
 
             var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{id:int}/statistics")]
+        [SwaggerOperation(
+    Summary = "Get assignment statistics",
+    Description = "Retrieves statistics for a specific assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAssignmentStatistics(int id)
+        {
+            var query = new GetAssignmentStatisticsQuery(id);
+
+            var result = await mediator.Send(query);
 
             return result.ToActionResult();
         }
