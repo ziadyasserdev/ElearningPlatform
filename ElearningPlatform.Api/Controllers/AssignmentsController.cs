@@ -12,6 +12,7 @@ using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentBy
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentStatistics;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetAssignmentSubmissions;
 using ElearningPlatform.Application.Features.Assignments.Queries.GetCourseAssignments;
+using ElearningPlatform.Application.Features.Assignments.Queries.GetPendingStudents;
 using ElearningPlatform.Domain.Enums;
 using FluentValidation;
 using MediatR;
@@ -277,6 +278,28 @@ namespace ElearningPlatform.Api.Controllers
                 pageSize,
                 search,
                 status);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{assignmentId:int}/pending-students")]
+        [SwaggerOperation(
+    Summary = "Get pending students",
+    Description = "Retrieves a paginated list of students who have not submitted the specified assignment."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPendingStudents(
+    int assignmentId,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+        {
+            var query = new GetPendingStudentsQuery(
+                assignmentId,
+                pageNumber,
+                pageSize);
 
             var result = await mediator.Send(query);
 
