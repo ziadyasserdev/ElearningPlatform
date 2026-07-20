@@ -14,25 +14,31 @@ namespace ElearningPlatform.Domain.Models
 
         public string StudentId { get; set; } = null!;
 
-     
-        public string FileUrl { get; set; } = string.Empty;
+      
+        public string FileName { get; set; } = string.Empty;
 
        
-        public string? Comment { get; set; }
-
-      
-        public int? Score { get; set; }
-
-        // تعليقات المعلم على التسليم
-        public string? Feedback { get; set; }
-
-      
-        public DateTime SubmittedAt { get; set; }
-
-    
-        public DateTime? GradedAt { get; set; }
+        public string FileUrl { get; set; } = string.Empty;
 
      
+        public string ContentType { get; set; } = string.Empty;
+
+       
+        public long FileSize { get; set; }
+
+      
+        public string? Comment { get; set; }
+
+        
+        public int? Score { get; set; }
+
+     
+        public string? Feedback { get; set; }
+
+        public DateTime SubmittedAt { get; set; }
+
+        public DateTime? GradedAt { get; set; }
+
         public bool IsLate { get; set; }
 
         public SubmissionStatus Status { get; set; }
