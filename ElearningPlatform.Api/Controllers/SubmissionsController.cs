@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Submissions.Commands.CreateSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmission;
+using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
@@ -125,6 +126,26 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> DeleteSubmission(int submissionId)
         {
             var command = new DeleteSubmissionCommand(submissionId);
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPatch("{submissionId:int}/grade")]
+        [SwaggerOperation(
+    Summary = "Grade submission",
+    Description = "Grades a submission and optionally adds instructor feedback."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GradeSubmission(
+    int submissionId,
+    [FromBody] GradeSubmissionCommand command)
+        {
+            command = command with { SubmissionId = submissionId };
 
             var result = await mediator.Send(command);
 
