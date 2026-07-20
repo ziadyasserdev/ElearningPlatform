@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Submissions.Commands.CreateSubmission;
+using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
 using ElearningPlatform.Domain.Enums;
@@ -85,6 +86,27 @@ namespace ElearningPlatform.Api.Controllers
                 pageSize);
 
             var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpPut("{submissionId:int}")]
+        [SwaggerOperation(
+    Summary = "Replace submission",
+    Description = "Replaces the uploaded file and optionally updates the submission comment."
+)]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ReplaceSubmission(
+    int submissionId,
+    [FromForm] ReplaceSubmissionCommand command)
+        {
+            command = command with { SubmissionId = submissionId };
+
+            var result = await mediator.Send(command);
 
             return result.ToActionResult();
         }
