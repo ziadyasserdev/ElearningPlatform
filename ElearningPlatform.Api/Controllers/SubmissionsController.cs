@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.CreateSubmissi
 using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
+using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
 using ElearningPlatform.Domain.Enums;
@@ -144,6 +145,26 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GradeSubmission(
     int submissionId,
     [FromBody] GradeSubmissionCommand command)
+        {
+            command = command with { SubmissionId = submissionId };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPut("{submissionId:int}/grade")]
+        [SwaggerOperation(
+    Summary = "Update submission grade",
+    Description = "Updates the grade and feedback for a graded submission."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateGrade(
+    int submissionId,
+    [FromBody] UpdateGradeCommand command)
         {
             command = command with { SubmissionId = submissionId };
 
