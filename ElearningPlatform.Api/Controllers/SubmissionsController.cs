@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Submissions.Commands.CreateSubmission;
+using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
@@ -105,6 +106,25 @@ namespace ElearningPlatform.Api.Controllers
     [FromForm] ReplaceSubmissionCommand command)
         {
             command = command with { SubmissionId = submissionId };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+
+        [HttpDelete("{submissionId:int}")]
+        [SwaggerOperation(
+    Summary = "Delete submission",
+    Description = "Deletes a submission."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteSubmission(int submissionId)
+        {
+            var command = new DeleteSubmissionCommand(submissionId);
 
             var result = await mediator.Send(command);
 
