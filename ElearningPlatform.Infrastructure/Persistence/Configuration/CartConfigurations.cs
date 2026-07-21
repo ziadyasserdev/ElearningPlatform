@@ -17,6 +17,10 @@ namespace ElearningPlatform.Infrastructure.Persistence.Configuration
 
             builder.Property(x => x.StudentId)
                 .IsRequired();
+            builder.HasOne(x => x.Coupon)
+    .WithMany()
+    .HasForeignKey(x => x.CouponId)
+    .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasIndex(x => x.StudentId)
                 .IsUnique();

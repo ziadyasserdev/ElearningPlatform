@@ -51,10 +51,17 @@ namespace ElearningPlatform.Infrastructure.Repositories
 
         public ICartItemRepository CartItems { get; private set; }
 
+        public ICouponRepository Coupons { get; private set; }
+
+        public ICouponUsageRepository CouponUsages { get; private set; }
+
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
             Carts = new CartRepository(_context);
+            Coupons = new CouponRepository(_context);
+            CouponUsages = new CouponUsageRepository(_context);
             CartItems = new CartItemRepository(_context);
             AssignmentAttachments = new AssignmentAttachmentRepository(_context);
             Answers = new AnswerRepository(_context);

@@ -33,6 +33,8 @@ namespace ElearningPlatform.Application.Contracts.Repositories
         IStudentAnswerRepository StudentAnswers { get; }
         IInstructorRepository Instructors { get; }
         IAssignmentAttachmentRepository AssignmentAttachments { get; }
+        ICouponRepository Coupons { get; }
+        ICouponUsageRepository CouponUsages { get; }
         ICartRepository Carts { get; }
         ICartItemRepository CartItems { get; }
         // Certificates & Attendance

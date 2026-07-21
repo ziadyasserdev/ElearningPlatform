@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Carts.Commands.AddCourseToCart;
+using ElearningPlatform.Application.Features.Carts.Commands.ApplyCoupon;
 using ElearningPlatform.Application.Features.Carts.Commands.ClearCart;
 using ElearningPlatform.Application.Features.Carts.Commands.RemoveCourseFromCart;
 using ElearningPlatform.Application.Features.Carts.Queries.GetMyCart;
@@ -71,6 +72,21 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> ClearCart()
         {
             var result = await mediator.Send(new ClearCartCommand());
+            return result.ToActionResult();
+        }
+
+        [HttpPost("apply-coupon")]
+        [SwaggerOperation(
+    Summary = "Apply coupon",
+    Description = "Applies a coupon code to the authenticated user's shopping cart."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ApplyCoupon([FromBody] ApplyCouponCommand command)
+        {
+            var result = await mediator.Send(command);
             return result.ToActionResult();
         }
     }

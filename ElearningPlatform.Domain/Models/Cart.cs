@@ -10,7 +10,9 @@ namespace ElearningPlatform.Domain.Models
     public class Cart : BaseEntity
     {
         public string StudentId { get; set; }
+        public int? CouponId { get; set; }
 
+        public Coupon? Coupon { get; set; }
         public ApplicationUser Student { get; set; }
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
