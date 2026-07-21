@@ -53,8 +53,14 @@ namespace ElearningPlatform.Infrastructure.Extensions
             services.AddScoped<IPaymentService, StripePaymentService>();
             services.Configure<StripeOptions>(
     configuration.GetSection(StripeOptions.SectionName));
+            services.AddScoped<IStripeWebhookService, StripeWebhookService>();
+            services.Configure<StripeOptions>(
+    configuration.GetSection("Stripe"));
 
-           
+            services.AddScoped<IPaymentService, StripePaymentService>();
+
+            services.AddScoped<IStripeWebhookService, StripeWebhookService>();
+
             services.AddScoped<IVideoProcessingService, VideoProcessingService>();
             return services;
         }

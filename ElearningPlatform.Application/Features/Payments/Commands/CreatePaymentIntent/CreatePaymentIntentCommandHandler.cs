@@ -15,123 +15,92 @@ using System.Threading.Tasks;
 namespace ElearningPlatform.Application.Features.Payments.Commands.CreatePaymentIntent
 {
     public class CreatePaymentIntentCommandHandler
-        : IRequestHandler<CreatePaymentIntentCommand, Result<string>>
+       : IRequestHandler<CreatePaymentIntentCommand, Result<string>>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IPaymentService _paymentService;
-        private readonly ICurrentUserService _currentUser;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly ICurrentUserService currentUserService;
+        private readonly IPaymentService paymentService;
 
         public CreatePaymentIntentCommandHandler(
             IUnitOfWork unitOfWork,
-            IPaymentService paymentService,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUserService,
+            IPaymentService paymentService)
         {
-            _unitOfWork = unitOfWork;
-            _paymentService = paymentService;
-            _currentUser = currentUser;
+            this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
+            this.paymentService = paymentService;
         }
-
 
         public async Task<Result<string>> Handle(
             CreatePaymentIntentCommand request,
             CancellationToken cancellationToken)
         {
-
-
-            var userId = _currentUser.UserId;
-
-
-
-            var order = await _unitOfWork.Orders
-                .GetByIdAsync(request.OrderId);
-
-
-            if (order == null)
-            {
-                return Result<string>.Failure(
-                    ResultStatus.NotFound,
-                    "Order not found");
-            }
-
-
-
-            if (order.StudentId != userId)
-            {
+            if (!currentUserService.IsAuthenticated)
                 return Result<string>.Failure(
                     ResultStatus.Unauthorized,
-                    "You cannot pay for this order");
-            }
+                    "Authentication required.");
 
+            var userId = currentUserService.UserId;
 
+            var order = await unitOfWork.Orders.Query()
+                .Include(x => x.Payment)
+                .FirstOrDefaultAsync(x =>
+                    x.Id == request.OrderId &&
+                    x.StudentId == userId,
+                    cancellationToken);
+
+            if (order is null)
+                return Result<string>.Failure(
+                    ResultStatus.NotFound,
+                    "Order not found.");
 
             if (order.Status != OrderStatus.Pending)
-            {
                 return Result<string>.Failure(
                     ResultStatus.Failure,
-                    "Only pending orders can be paid");
-            }
+                    "Order cannot be paid.");
 
-
-
-
-            var existingPayment = await _unitOfWork.Payments
-                .Query()
-                .FirstOrDefaultAsync(
-                    x => x.OrderId == order.Id,
-                    cancellationToken);
-
-
-            if (existingPayment != null)
+            if (order.Payment != null &&
+                order.Payment.Status == PaymentStatus.Paid)
             {
                 return Result<string>.Failure(
-                    ResultStatus.Failure,
-                    "Payment already created");
+                    ResultStatus.Conflict,
+                    "Order has already been paid.");
             }
 
+            var paymentIntent = await paymentService.CreatePaymentIntentAsync(
+                order.TotalAmount,
+                "usd",
+                cancellationToken);
 
-
-
-
-            var paymentIntent = await _paymentService
-                .CreatePaymentIntentAsync(
-                    order.TotalAmount,
-                    "usd",
-                    cancellationToken);
-
-
-
-
-
-            var payment = new Payment
+            if (order.Payment is null)
             {
-                OrderId = order.Id,
+                var payment = new Payment
+                {
+                    OrderId = order.Id,
+                    Amount = order.TotalAmount,
+                    Currency = "usd",
+                    Provider = PaymentProvider.Stripe,
+                    Status = PaymentStatus.Pending,
+                    PaymentIntentId = paymentIntent.PaymentIntentId,
+                    ClientSecret = paymentIntent.ClientSecret,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = currentUserService.UserName
+                };
 
-                PaymentIntentId = paymentIntent.PaymentIntentId,
+                await unitOfWork.Payments.AddAsync(payment);
+            }
+            else
+            {
+                order.Payment.PaymentIntentId = paymentIntent.PaymentIntentId;
+                order.Payment.ClientSecret = paymentIntent.ClientSecret;
+                order.Payment.Status = PaymentStatus.Pending;
+                order.Payment.UpdatedAt = DateTime.Now;
+                order.Payment.UpdatedBy = currentUserService.UserName;
+            }
 
-                ClientSecret = paymentIntent.ClientSecret,
+            await unitOfWork.SaveAsync();
 
-                Amount = order.TotalAmount,
-
-                Status = PaymentStatus.Pending,
-
-                CreatedAt = DateTime.Now
-            };
-
-
-            await _unitOfWork.Payments.AddAsync(payment);
-
-
-
-
-            await _unitOfWork.SaveAsync();
-
-
-
-
-
-            return Result<string>.Success(
-                paymentIntent.ClientSecret,
-                "Payment intent created successfully");
+            return Result<string>.Success(paymentIntent.ClientSecret);
         }
     }
 }
