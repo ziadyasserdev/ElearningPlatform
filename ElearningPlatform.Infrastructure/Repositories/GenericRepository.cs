@@ -52,5 +52,10 @@ namespace ElearningPlatform.Infrastructure.Repositories
         {
             _dbSet.Update(entity);
         }
+        public void DeleteRange(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+        }
+
     }
 }

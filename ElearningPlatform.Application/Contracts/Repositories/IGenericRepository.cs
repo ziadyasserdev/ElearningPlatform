@@ -14,6 +14,7 @@ namespace ElearningPlatform.Application.Contracts.Repositories
         Task AddRange(IEnumerable<T> entities);
         void Update(T entity);
         void Delete(T entity);
+        void DeleteRange(IEnumerable<T> entities);
         IQueryable<T> Query();
     }
 }
