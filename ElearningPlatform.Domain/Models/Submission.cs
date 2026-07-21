@@ -38,6 +38,11 @@ namespace ElearningPlatform.Domain.Models
         public DateTime SubmittedAt { get; set; }
 
         public DateTime? GradedAt { get; set; }
+        public int AttemptNumber { get; set; } = 1;
+
+        public DateTime? ReturnedAt { get; set; }
+
+        public string? ReturnReason { get; set; }
 
         public bool IsLate { get; set; }
 

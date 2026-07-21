@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.CreateSubmissi
 using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
+using ElearningPlatform.Application.Features.Submissions.Commands.ResubmitSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
 using ElearningPlatform.Application.Features.Submissions.Queries.DownloadAllSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.DownloadSubmission;
@@ -352,6 +353,27 @@ namespace ElearningPlatform.Api.Controllers
                 result.Value!.FileBytes,
                 result.Value.ContentType,
                 result.Value.FileName);
+        }
+        [HttpPost("{submissionId:int}/resubmit")]
+        [SwaggerOperation(
+    Summary = "Resubmit assignment",
+    Description = "Resubmits an existing assignment submission with a new file."
+)]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ResubmitSubmission(
+    int submissionId,
+    [FromForm] ResubmitSubmissionCommand command)
+        {
+            command = command with { SubmissionId = submissionId };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
         }
     }
 }

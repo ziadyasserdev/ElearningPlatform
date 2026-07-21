@@ -10,6 +10,7 @@ namespace ElearningPlatform.Domain.Enums
     {
         Submitted = 1,
         Graded = 2,
-        Late = 3
+        Late = 3,
+        Returned = 4
     }
 }
