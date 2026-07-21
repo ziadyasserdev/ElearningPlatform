@@ -6,6 +6,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmiss
 using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
+using ElearningPlatform.Application.Features.Submissions.Queries.GetSubmissionDetails;
 using ElearningPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -169,6 +170,23 @@ namespace ElearningPlatform.Api.Controllers
             command = command with { SubmissionId = submissionId };
 
             var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{submissionId:int}")]
+        [SwaggerOperation(
+    Summary = "Get submission details",
+    Description = "Retrieves detailed information about a specific submission."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetSubmissionDetails(int submissionId)
+        {
+            var query = new GetSubmissionDetailsQuery(submissionId);
+
+            var result = await mediator.Send(query);
 
             return result.ToActionResult();
         }
