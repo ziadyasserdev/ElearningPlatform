@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Carts.Commands.AddCourseToCart;
+using ElearningPlatform.Application.Features.Carts.Commands.RemoveCourseFromCart;
 using ElearningPlatform.Application.Features.Carts.Queries.GetMyCart;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -42,6 +43,20 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetMyCart()
         {
             var result = await mediator.Send(new GetMyCartQuery());
+            return result.ToActionResult();
+        }
+        [HttpDelete("remove-course")]
+        [SwaggerOperation(
+    Summary = "Remove course from cart",
+    Description = "Removes a course from the authenticated user's shopping cart."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoveCourseFromCart([FromBody] RemoveCourseFromCartCommand command)
+        {
+            var result = await mediator.Send(command);
             return result.ToActionResult();
         }
     }
