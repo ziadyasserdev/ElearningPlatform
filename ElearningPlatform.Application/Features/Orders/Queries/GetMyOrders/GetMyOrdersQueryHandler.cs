@@ -49,7 +49,7 @@ namespace ElearningPlatform.Application.Features.Orders.Queries.GetMyOrders
                     OrderNumber = x.OrderNumber,
                     TotalAmount = x.TotalAmount,
                     DiscountAmount = x.DiscountAmount,
-                    Status = x.Status,
+                    Status = x.Status.ToString(),
                     CreatedAt = x.CreatedAt,
                     PaidAt = x.PaidAt,
                     CoursesCount = x.OrderItems.Count

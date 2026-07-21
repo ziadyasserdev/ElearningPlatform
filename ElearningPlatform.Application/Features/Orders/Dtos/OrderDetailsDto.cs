@@ -7,22 +7,28 @@ using System.Threading.Tasks;
 
 namespace ElearningPlatform.Application.Features.Orders.Dtos
 {
-    public class OrderDto
+    public class OrderDetailsDto
     {
         public int OrderId { get; set; }
 
         public string OrderNumber { get; set; } = string.Empty;
 
-        public decimal TotalAmount { get; set; }
+        public decimal SubTotal { get; set; }
 
         public decimal DiscountAmount { get; set; }
 
-        public string Status { get; set; }
+        public decimal TotalAmount { get; set; }
+
+        public OrderStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime? PaidAt { get; set; }
 
-        public int CoursesCount { get; set; }
+        public string? CouponCode { get; set; }
+
+        public List<OrderItemDto> Items { get; set; } = new();
+
+        public PaymentDto? Payment { get; set; }
     }
 }
