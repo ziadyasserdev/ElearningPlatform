@@ -12,17 +12,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElearningPlatform.Application.Features.Submissions.Queries.GetUngradedSubmissions
+namespace ElearningPlatform.Application.Features.Submissions.Queries.GetPendingGradeSubmissions
 {
-    public class GetUngradedSubmissionsQueryHandler
-        : IRequestHandler<
-            GetUngradedSubmissionsQuery,
-            Result<PaginatedResult<UngradedSubmissionDto>>>
+    public class GetPendingGradeSubmissionsQueryHandler
+          : IRequestHandler<
+              GetPendingGradeSubmissionsQuery,
+              Result<PaginatedResult<PendingGradeSubmissionDto>>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
 
-        public GetUngradedSubmissionsQueryHandler(
+        public GetPendingGradeSubmissionsQueryHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService)
         {
@@ -30,54 +30,39 @@ namespace ElearningPlatform.Application.Features.Submissions.Queries.GetUngraded
             this.currentUserService = currentUserService;
         }
 
-        public async Task<Result<PaginatedResult<UngradedSubmissionDto>>> Handle(
-            GetUngradedSubmissionsQuery request,
+        public async Task<Result<PaginatedResult<PendingGradeSubmissionDto>>> Handle(
+            GetPendingGradeSubmissionsQuery request,
             CancellationToken cancellationToken)
         {
             if (!currentUserService.IsAuthenticated)
             {
-                return Result<PaginatedResult<UngradedSubmissionDto>>.Failure(
+                return Result<PaginatedResult<PendingGradeSubmissionDto>>.Failure(
                     ResultStatus.Unauthorized,
                     "User is not authenticated.");
             }
 
             var userId = currentUserService.UserId;
 
-           
-            var assignmentExists = await unitOfWork.Assignments
-                .Query()
-                .AnyAsync(a =>
-                    a.Id == request.AssignmentId &&
-                    !a.IsDeleted &&
-                    a.Course.Instructor.UserId == userId,
-                    cancellationToken);
-
-            if (!assignmentExists)
-            {
-                return Result<PaginatedResult<UngradedSubmissionDto>>.Failure(
-                    ResultStatus.NotFound,
-                    "Assignment not found.");
-            }
-
             var query = unitOfWork.Submissions
                 .Query()
                 .AsNoTracking()
                 .Where(s =>
-                    s.AssignmentId == request.AssignmentId &&
                     !s.IsDeleted &&
-                    s.Status != SubmissionStatus.Graded);
+                    s.Status != SubmissionStatus.Graded &&
+                    s.Assignment.Course.Instructor.UserId == userId);
 
-          
+         
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                var search = request.Search.Trim().ToLower();
+                var search = request.Search.Trim();
 
                 query = query.Where(s =>
-                    s.Student.FullName.ToLower().Contains(search) ||
-                    s.Student.Email!.ToLower().Contains(search));
+                    s.Student.FullName.Contains(search) ||
+                    s.Student.Email!.Contains(search) ||
+                    s.Assignment.Title.Contains(search) ||
+                    s.Assignment.Course.Title.Contains(search));
             }
 
-          
             if (request.IsLate.HasValue)
             {
                 query = query.Where(s =>
@@ -85,21 +70,44 @@ namespace ElearningPlatform.Application.Features.Submissions.Queries.GetUngraded
             }
 
           
+            query = request.SortBy switch
+            {
+                SubmissionSortBy.SubmittedAt =>
+                    request.Descending
+                        ? query.OrderByDescending(s => s.SubmittedAt)
+                        : query.OrderBy(s => s.SubmittedAt),
+
+                SubmissionSortBy.StudentName =>
+                    request.Descending
+                        ? query.OrderByDescending(s => s.Student.FullName)
+                        : query.OrderBy(s => s.Student.FullName),
+
+                SubmissionSortBy.AssignmentTitle =>
+                    request.Descending
+                        ? query.OrderByDescending(s => s.Assignment.Title)
+                        : query.OrderBy(s => s.Assignment.Title),
+
+                _ =>
+                    query.OrderByDescending(s => s.SubmittedAt)
+            };
+
             var totalCount = await query
                 .CountAsync(cancellationToken);
 
-           
             var submissions = await query
-                .OrderByDescending(s => s.SubmittedAt)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .Select(s => new UngradedSubmissionDto
+                .Select(s => new PendingGradeSubmissionDto
                 {
                     Id = s.Id,
 
                     AssignmentId = s.AssignmentId,
 
                     AssignmentTitle = s.Assignment.Title,
+
+                    CourseId = s.Assignment.CourseId,
+
+                    CourseTitle = s.Assignment.Course.Title,
 
                     StudentId = s.StudentId,
 
@@ -109,24 +117,21 @@ namespace ElearningPlatform.Application.Features.Submissions.Queries.GetUngraded
 
                     FileName = s.FileName,
 
-                    FileSize = s.FileSize,
-
                     Comment = s.Comment,
 
                     IsLate = s.IsLate,
 
-                   
                     SubmittedAt = s.SubmittedAt
                 })
                 .ToListAsync(cancellationToken);
 
-            var result = new PaginatedResult<UngradedSubmissionDto>(
+            var result = new PaginatedResult<PendingGradeSubmissionDto>(
                 submissions,
                 totalCount,
                 request.PageNumber,
                 request.PageSize);
 
-            return Result<PaginatedResult<UngradedSubmissionDto>>
+            return Result<PaginatedResult<PendingGradeSubmissionDto>>
                 .Success(result);
         }
     }

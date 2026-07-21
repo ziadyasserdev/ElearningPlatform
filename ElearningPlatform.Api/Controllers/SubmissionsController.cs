@@ -7,6 +7,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetGradedSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
+using ElearningPlatform.Application.Features.Submissions.Queries.GetPendingGradeSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetSubmissionDetails;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetUngradedSubmissions;
 using ElearningPlatform.Domain.Enums;
@@ -247,6 +248,35 @@ namespace ElearningPlatform.Api.Controllers
                 isLate,
                 minScore,
                 maxScore,
+                sortBy,
+                descending,
+                pageNumber,
+                pageSize);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("pending-grade")]
+        [SwaggerOperation(
+    Summary = "Get pending grade submissions",
+    Description = "Retrieves a paginated list of submissions that are waiting for grading with optional search, late status, and sorting filters."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetPendingGradeSubmissions(
+    [FromQuery] string? search = null,
+    [FromQuery] bool? isLate = null,
+    [FromQuery] SubmissionSortBy sortBy = SubmissionSortBy.SubmittedAt,
+    [FromQuery] bool descending = true,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+        {
+            var query = new GetPendingGradeSubmissionsQuery(
+                search,
+                isLate,
                 sortBy,
                 descending,
                 pageNumber,
