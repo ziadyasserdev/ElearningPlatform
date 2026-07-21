@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Coupons.Commands.CreateCoupon;
+using ElearningPlatform.Application.Features.Coupons.Commands.UpdateCoupon;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,22 @@ namespace ElearningPlatform.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] CreateCouponCommand command)
         {
+            var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpPut("{id}")]
+        [SwaggerOperation(
+    Summary = "Update coupon",
+    Description = "Updates an existing coupon."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCouponCommand command)
+        {
+            command.Id = id;
+
             var result = await mediator.Send(command);
             return result.ToActionResult();
         }
