@@ -21,6 +21,7 @@ namespace ElearningPlatform.Domain.Models
         public decimal TotalAmount { get; set; }
 
         public OrderStatus Status { get; set; }
+        public DateTime? PaidAt { get; set; }
 
         public int? CouponId { get; set; }
 

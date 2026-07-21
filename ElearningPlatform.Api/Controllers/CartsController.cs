@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Features.Carts.Commands.AddCourseToCart;
 using ElearningPlatform.Application.Features.Carts.Commands.ApplyCoupon;
 using ElearningPlatform.Application.Features.Carts.Commands.ClearCart;
+using ElearningPlatform.Application.Features.Carts.Commands.RemoveCoupon;
 using ElearningPlatform.Application.Features.Carts.Commands.RemoveCourseFromCart;
 using ElearningPlatform.Application.Features.Carts.Queries.GetMyCart;
 using MediatR;
@@ -87,6 +88,19 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> ApplyCoupon([FromBody] ApplyCouponCommand command)
         {
             var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpDelete("remove-coupon")]
+        [SwaggerOperation(
+    Summary = "Remove coupon",
+    Description = "Removes the applied coupon from the authenticated user's shopping cart."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> RemoveCoupon()
+        {
+            var result = await mediator.Send(new RemoveCouponCommand());
             return result.ToActionResult();
         }
     }

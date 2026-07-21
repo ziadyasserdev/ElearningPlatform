@@ -17,6 +17,7 @@ namespace ElearningPlatform.Domain.Models
         public decimal Discount { get; set; }
 
         public decimal FinalPrice { get; set; }
+        public string CourseTitle { get; set; } = string.Empty;
 
         public Order Order { get; set; } = null!;
 

@@ -55,10 +55,14 @@ namespace ElearningPlatform.Infrastructure.Repositories
 
         public ICouponUsageRepository CouponUsages { get; private set; }
 
+        public IOrderRepository Orders { get; private set; }
 
+        public IOrderItemRepository OrderItems { get; private set; }
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
+            Orders = new OrderRepository(_context);
+            OrderItems = new OrderItemRepository(_context);
             Carts = new CartRepository(_context);
             Coupons = new CouponRepository(_context);
             CouponUsages = new CouponUsageRepository(_context);

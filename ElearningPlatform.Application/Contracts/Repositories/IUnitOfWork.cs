@@ -40,7 +40,8 @@ namespace ElearningPlatform.Application.Contracts.Repositories
         // Certificates & Attendance
         ICertificateRepository Certificates { get; }
         IAttendanceRepository Attendances { get; }
-
+        IOrderRepository Orders { get; }
+        IOrderItemRepository OrderItems { get; }
         // Reviews
         IReviewRepository Reviews { get; }
 

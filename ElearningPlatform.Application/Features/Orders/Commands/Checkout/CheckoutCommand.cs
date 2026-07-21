@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElearningPlatform.Application.Features.Carts.Commands.RemoveCoupon
+namespace ElearningPlatform.Application.Features.Orders.Commands.Checkout
 {
-    public class RemoveCouponCommand : IRequest<Result<string>>
+    public class CheckoutCommand : IRequest<Result<int>>
     {
     }
 }
