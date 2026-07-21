@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <Folder Include="Features\Authentications\Queries\" />
+    <Folder Include="Features\Carts\Dtos\" />
+    <Folder Include="Features\Carts\Queries\" />
   </ItemGroup>
 
   <ItemGroup>
