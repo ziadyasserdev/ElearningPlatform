@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmissi
 using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
+using ElearningPlatform.Application.Features.Submissions.Queries.DownloadAllSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.DownloadSubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetGradedSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
@@ -303,6 +304,27 @@ namespace ElearningPlatform.Api.Controllers
                 new DownloadSubmissionQuery(submissionId));
 
 
+            return File(
+                result.Value!.FileBytes,
+                result.Value.ContentType,
+                result.Value.FileName);
+        }
+        [HttpGet("assignments/{assignmentId:int}/submissions/download-all")]
+        [SwaggerOperation(
+    Summary = "Download all submissions",
+    Description = "Downloads all submitted files for a specific assignment as a single ZIP archive."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DownloadAllSubmissions(int assignmentId)
+        {
+            var result = await mediator.Send(
+                new DownloadAllSubmissionsQuery(assignmentId));
+
+         
             return File(
                 result.Value!.FileBytes,
                 result.Value.ContentType,
