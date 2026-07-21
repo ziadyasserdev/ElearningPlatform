@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Coupons.Commands.CreateCoupon;
+using ElearningPlatform.Application.Features.Coupons.Commands.DeleteCoupon;
 using ElearningPlatform.Application.Features.Coupons.Commands.UpdateCoupon;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,20 @@ namespace ElearningPlatform.Api.Controllers
             command.Id = id;
 
             var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpDelete("{id}")]
+        [SwaggerOperation(
+    Summary = "Delete coupon",
+    Description = "Deletes a coupon."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await mediator.Send(new DeleteCouponCommand(id));
             return result.ToActionResult();
         }
     }
