@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Orders.Commands.Checkout;
+using ElearningPlatform.Application.Features.Orders.Queries.GetMyOrders;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,18 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> Checkout()
         {
             var result = await mediator.Send(new CheckoutCommand());
+            return result.ToActionResult();
+        }
+        [HttpGet("my-orders")]
+        [SwaggerOperation(
+    Summary = "Get my orders",
+    Description = "Retrieves all orders for the authenticated user."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            var result = await mediator.Send(new GetMyOrdersQuery());
             return result.ToActionResult();
         }
     }
