@@ -10,7 +10,9 @@ namespace ElearningPlatform.Domain.Enums
     public enum SubmissionSortBy
     {
         SubmittedAt,
+        GradedAt,
         Score,
+        StudentName,
         AssignmentTitle
     }
 }

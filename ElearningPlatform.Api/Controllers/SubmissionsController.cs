@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmissi
 using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
+using ElearningPlatform.Application.Features.Submissions.Queries.GetGradedSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetSubmissionDetails;
@@ -212,6 +213,42 @@ namespace ElearningPlatform.Api.Controllers
                 assignmentId,
                 search,
                 isLate,
+                pageNumber,
+                pageSize);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{assignmentId:int}/submissions/graded")]
+        [SwaggerOperation(
+    Summary = "Get graded submissions",
+    Description = "Retrieves a paginated list of graded submissions for a specific assignment with optional search, late status, score range, and sorting filters."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetGradedSubmissions(
+    int assignmentId,
+    [FromQuery] string? search = null,
+    [FromQuery] bool? isLate = null,
+    [FromQuery] int? minScore = null,
+    [FromQuery] int? maxScore = null,
+    [FromQuery] SubmissionSortBy sortBy = SubmissionSortBy.GradedAt,
+    [FromQuery] bool descending = true,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+        {
+            var query = new GetGradedSubmissionsQuery(
+                assignmentId,
+                search,
+                isLate,
+                minScore,
+                maxScore,
+                sortBy,
+                descending,
                 pageNumber,
                 pageSize);
 
