@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmissi
 using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ResubmitSubmission;
+using ElearningPlatform.Application.Features.Submissions.Commands.ReturnSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
 using ElearningPlatform.Application.Features.Submissions.Queries.DownloadAllSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.DownloadSubmission;
@@ -370,6 +371,28 @@ namespace ElearningPlatform.Api.Controllers
     [FromForm] ResubmitSubmissionCommand command)
         {
             command = command with { SubmissionId = submissionId };
+
+            var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpPost("{submissionId:int}/return")]
+        [SwaggerOperation(
+    Summary = "Return submission",
+    Description = "Returns a submission to the student with a reason for revision or resubmission."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ReturnSubmission(
+    int submissionId,
+    [FromBody] ReturnSubmissionCommand request)
+        {
+            var command = new ReturnSubmissionCommand(
+                submissionId,
+                request.Reason);
 
             var result = await mediator.Send(command);
 
