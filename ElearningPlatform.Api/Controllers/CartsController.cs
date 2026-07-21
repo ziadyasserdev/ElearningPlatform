@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Carts.Commands.AddCourseToCart;
+using ElearningPlatform.Application.Features.Carts.Queries.GetMyCart;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,18 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> AddCourseToCart([FromBody] AddCourseToCartCommand command)
         {
             var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpGet("my-cart")]
+        [SwaggerOperation(
+    Summary = "Get my cart",
+    Description = "Retrieve the authenticated user's shopping cart with all added courses."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyCart()
+        {
+            var result = await mediator.Send(new GetMyCartQuery());
             return result.ToActionResult();
         }
     }
