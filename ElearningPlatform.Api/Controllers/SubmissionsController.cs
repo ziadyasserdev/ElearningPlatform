@@ -7,6 +7,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetSubmissionDetails;
+using ElearningPlatform.Application.Features.Submissions.Queries.GetUngradedSubmissions;
 using ElearningPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -185,6 +186,34 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetSubmissionDetails(int submissionId)
         {
             var query = new GetSubmissionDetailsQuery(submissionId);
+
+            var result = await mediator.Send(query);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("{assignmentId:int}/submissions/ungraded")]
+        [SwaggerOperation(
+    Summary = "Get ungraded submissions",
+    Description = "Retrieves a paginated list of ungraded submissions for a specific assignment with optional search and late submission filtering."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUngradedSubmissions(
+    int assignmentId,
+    [FromQuery] string? search = null,
+    [FromQuery] bool? isLate = null,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+        {
+            var query = new GetUngradedSubmissionsQuery(
+                assignmentId,
+                search,
+                isLate,
+                pageNumber,
+                pageSize);
 
             var result = await mediator.Send(query);
 
