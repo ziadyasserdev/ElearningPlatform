@@ -58,9 +58,13 @@ namespace ElearningPlatform.Infrastructure.Repositories
         public IOrderRepository Orders { get; private set; }
 
         public IOrderItemRepository OrderItems { get; private set; }
+
+        public IPaymentRepository Payments { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
+            Payments = new PaymentRepository(_context);
             Orders = new OrderRepository(_context);
             OrderItems = new OrderItemRepository(_context);
             Carts = new CartRepository(_context);

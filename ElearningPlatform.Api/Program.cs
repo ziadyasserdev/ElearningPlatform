@@ -1,11 +1,13 @@
 using ElearningPlatform.Api.Extensions;
 using ElearningPlatform.Api.Middleware;
 using ElearningPlatform.Application.Contracts.Identity;
+using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Extensions;
 using ElearningPlatform.Application.Settings;
 using ElearningPlatform.Domain.Identity;
 using ElearningPlatform.Infrastructure.Extensions;
 using ElearningPlatform.Infrastructure.Identity;
+using ElearningPlatform.Infrastructure.Payments;
 using ElearningPlatform.Infrastructure.Persistence.Context;
 using ElearningPlatform.Infrastructure.Persistence.SeedData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +42,10 @@ namespace ElearningPlatform.Api
             {
                 c.EnableAnnotations();
             });
+
+   
+
+          
 
 
             builder.Services.AddInfrastructureServices(builder.Configuration)

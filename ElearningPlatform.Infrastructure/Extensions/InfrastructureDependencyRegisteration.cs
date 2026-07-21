@@ -1,10 +1,12 @@
 ﻿using ElearningPlatform.Application.Contracts.ExternalServices;
 using ElearningPlatform.Application.Contracts.Identity;
+using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Contracts.Repositories;
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Domain.Identity;
 using ElearningPlatform.Infrastructure.ExternalServices;
 using ElearningPlatform.Infrastructure.Identity;
+using ElearningPlatform.Infrastructure.Payments;
 using ElearningPlatform.Infrastructure.Persistence.Context;
 using ElearningPlatform.Infrastructure.Repositories;
 using ElearningPlatform.Infrastructure.Services;
@@ -48,6 +50,11 @@ namespace ElearningPlatform.Infrastructure.Extensions
             services.AddScoped<IMediaService, MediaService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IPaymentService, StripePaymentService>();
+            services.Configure<StripeOptions>(
+    configuration.GetSection(StripeOptions.SectionName));
+
+           
             services.AddScoped<IVideoProcessingService, VideoProcessingService>();
             return services;
         }

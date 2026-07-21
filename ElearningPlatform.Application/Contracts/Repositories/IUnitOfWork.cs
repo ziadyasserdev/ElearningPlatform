@@ -44,7 +44,7 @@ namespace ElearningPlatform.Application.Contracts.Repositories
         IOrderItemRepository OrderItems { get; }
         // Reviews
         IReviewRepository Reviews { get; }
-
+        IPaymentRepository Payments { get; }
         // Transactions
         Task<IDbContextTransaction> BeginTransactionAsync();
 

@@ -20,6 +20,7 @@ namespace ElearningPlatform.Domain.Models
         public string? TransactionId { get; set; }
 
         public string? PaymentIntentId { get; set; }
+        public string? ClientSecret { get; set; }
 
         public PaymentStatus Status { get; set; }
 
