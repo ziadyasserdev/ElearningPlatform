@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Submissions.Commands.DeleteSubmissi
 using ElearningPlatform.Application.Features.Submissions.Commands.GradeSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.ReplaceSubmission;
 using ElearningPlatform.Application.Features.Submissions.Commands.UpdateGrade;
+using ElearningPlatform.Application.Features.Submissions.Queries.DownloadSubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetGradedSubmissions;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmission;
 using ElearningPlatform.Application.Features.Submissions.Queries.GetMySubmissions;
@@ -285,6 +286,27 @@ namespace ElearningPlatform.Api.Controllers
             var result = await mediator.Send(query);
 
             return result.ToActionResult();
+        }
+        [HttpGet("{submissionId:int}/download")]
+        [SwaggerOperation(
+    Summary = "Download submission",
+    Description = "Downloads the submitted file for a specific submission."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DownloadSubmission(int submissionId)
+        {
+            var result = await mediator.Send(
+                new DownloadSubmissionQuery(submissionId));
+
+
+            return File(
+                result.Value!.FileBytes,
+                result.Value.ContentType,
+                result.Value.FileName);
         }
     }
 }
