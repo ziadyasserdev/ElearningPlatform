@@ -43,6 +43,21 @@ namespace ElearningPlatform.Infrastructure.Persistence.Context
        public DbSet<VideoProgress> VideoProgresses { get; set; }
         public DbSet<VideoComment> VideoComments { get; set; }
         public DbSet<AssignmentAttachment> AssignmentAttachments { get; set; }
-    
+        public DbSet<Cart> Carts { get; set; }
+
+        public DbSet<CartItem> CartItems { get; set; }
+
+        public DbSet<Coupon> Coupons { get; set; }
+
+        public DbSet<CouponUsage> CouponUsages { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderItem> OrderItems { get; set; }
+
+        public DbSet<Payment> Payments { get; set; }
+
+        public DbSet<Refund> Refunds { get; set; }
+
     }
 }

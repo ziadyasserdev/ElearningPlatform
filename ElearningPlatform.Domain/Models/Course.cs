@@ -33,7 +33,7 @@ namespace ElearningPlatform.Domain.Models
         public int TotalReviews { get; set; } = 0;
         public bool IsActive { get; set; } = true;
         public bool IsFeatured { get; set; } = false;
-
+        public bool IsFree { get; set; }
         public DateTime? LastUpdatedAt { get; set; }
         public InstructorProfile Instructor { get; set; }
         public Category Category { get; set; }

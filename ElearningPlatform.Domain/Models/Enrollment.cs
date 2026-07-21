@@ -21,7 +21,9 @@ namespace ElearningPlatform.Domain.Models
         public DateTime EnrolledAt { get; set; }
 
         public DateTime? CompletedAt { get; set; }
+        public int? OrderId { get; set; }
 
+        public Order? Order { get; set; }
 
         public ApplicationUser Student { get; set; }
 
