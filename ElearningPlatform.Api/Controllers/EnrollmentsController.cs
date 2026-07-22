@@ -9,6 +9,7 @@ using ElearningPlatform.Application.Features.Enrollments.Queries.GetCompletedCou
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetContinueWatching;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetCourseProgress;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetCourseStudents;
+using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentAnalytics;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentById;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentDetails;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentStatistics;
@@ -198,6 +199,19 @@ namespace ElearningPlatform.Api.Controllers
         {
             query.StudentId = studentId;
 
+            var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("analytics")]
+        [SwaggerOperation(
+    Summary = "Get enrollment analytics",
+    Description = "Retrieves enrollment analytics for the specified year."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetEnrollmentAnalytics(
+    [FromQuery] GetEnrollmentAnalyticsQuery query)
+        {
             var result = await mediator.Send(query);
             return result.ToActionResult();
         }
