@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Payments.Commands.CreatePaymentInte
 using ElearningPlatform.Application.Features.Payments.Commands.RetryPayment;
 using ElearningPlatform.Application.Features.Payments.Queries.GetMyPayments;
 using ElearningPlatform.Application.Features.Payments.Queries.GetPaymentDetails;
+using ElearningPlatform.Application.Features.Payments.Queries.VerifyPayment;
 using ElearningPlatform.Infrastructure.Payments;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -100,6 +101,20 @@ namespace ElearningPlatform.Api.Controllers
     [FromBody] RetryPaymentCommand command)
         {
             var result = await mediator.Send(command);
+
+            return result.ToActionResult();
+        }
+        [HttpGet("verify/{paymentIntentId}")]
+        [SwaggerOperation(
+    Summary = "Verify payment",
+    Description = "Returns the current payment status."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> VerifyPayment(string paymentIntentId)
+        {
+            var result = await mediator.Send(
+                new VerifyPaymentQuery(paymentIntentId));
 
             return result.ToActionResult();
         }
