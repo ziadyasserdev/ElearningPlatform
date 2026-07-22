@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -99,6 +100,19 @@ namespace ElearningPlatform.Api.Controllers
             query.CourseId = courseId;
 
             var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("courses/{courseId}/reviews/summary")]
+        [SwaggerOperation(
+    Summary = "Get course review summary",
+    Description = "Retrieves the review summary and rating statistics for the specified course."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCourseReviewSummary(int courseId)
+        {
+            var result = await mediator.Send(new GetCourseReviewSummaryQuery(courseId));
             return result.ToActionResult();
         }
     }
