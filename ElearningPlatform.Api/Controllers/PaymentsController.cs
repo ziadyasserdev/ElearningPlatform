@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Features.Payments.Commands.CreatePaymentIntent;
+using ElearningPlatform.Application.Features.Payments.Commands.RetryPayment;
 using ElearningPlatform.Application.Features.Payments.Queries.GetMyPayments;
 using ElearningPlatform.Application.Features.Payments.Queries.GetPaymentDetails;
 using ElearningPlatform.Infrastructure.Payments;
@@ -85,6 +86,21 @@ namespace ElearningPlatform.Api.Controllers
     [FromQuery] GetMyPaymentsQuery query)
         {
             var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpPost("retry")]
+        [SwaggerOperation(
+    Summary = "Retry payment",
+    Description = "Creates a new Stripe PaymentIntent for a failed or pending order."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RetryPayment(
+    [FromBody] RetryPaymentCommand command)
+        {
+            var result = await mediator.Send(command);
+
             return result.ToActionResult();
         }
     }
