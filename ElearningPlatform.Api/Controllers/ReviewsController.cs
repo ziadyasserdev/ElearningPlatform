@@ -1,4 +1,5 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
+using ElearningPlatform.Application.Features.Reviews.Commands.ApproveReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
@@ -113,6 +114,20 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetCourseReviewSummary(int courseId)
         {
             var result = await mediator.Send(new GetCourseReviewSummaryQuery(courseId));
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id}/approve")]
+        [SwaggerOperation(
+    Summary = "Approve review",
+    Description = "Approves the specified review."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ApproveReview(int id)
+        {
+            var result = await mediator.Send(new ApproveReviewCommand(id));
             return result.ToActionResult();
         }
     }
