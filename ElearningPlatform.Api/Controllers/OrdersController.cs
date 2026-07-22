@@ -4,7 +4,9 @@ using ElearningPlatform.Application.Features.Orders.Commands.Checkout;
 using ElearningPlatform.Application.Features.Orders.Queries.GetMyOrders;
 using ElearningPlatform.Application.Features.Orders.Queries.GetOrderDetails;
 using ElearningPlatform.Application.Features.Orders.Queries.GetOrders;
+using ElearningPlatform.Application.Features.Orders.Queries.GetOrderStatistics;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -85,6 +87,21 @@ namespace ElearningPlatform.Api.Controllers
         {
             var result = await mediator.Send(
                 new CancelOrderCommand(orderId));
+
+            return result.ToActionResult();
+        }
+        [HttpGet("statistics")]
+      
+        [SwaggerOperation(
+    Summary = "Order statistics",
+    Description = "Returns order statistics for the admin dashboard."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetStatistics()
+        {
+            var result = await mediator.Send(new GetOrderStatisticsQuery());
 
             return result.ToActionResult();
         }

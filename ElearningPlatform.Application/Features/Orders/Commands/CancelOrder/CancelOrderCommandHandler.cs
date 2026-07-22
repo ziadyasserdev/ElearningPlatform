@@ -53,12 +53,12 @@ namespace ElearningPlatform.Application.Features.Orders.Commands.CancelOrder
                     ResultStatus.Forbidden,
                     "You are not allowed to cancel this order.");
             }
-
-            if (order.Status == OrderStatus.Paid)
+            if (order.Status == OrderStatus.Paid ||
+                order.Status == OrderStatus.Processing)
             {
                 return Result<string>.Failure(
                     ResultStatus.Failure,
-                    "Paid orders cannot be cancelled.");
+                    "This order cannot be cancelled.");
             }
 
             if (order.Status == OrderStatus.Cancelled)
