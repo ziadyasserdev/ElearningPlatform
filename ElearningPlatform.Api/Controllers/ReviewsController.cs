@@ -11,6 +11,7 @@ using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetPendingReviews;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetReviewById;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetReviewStatistics;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -220,6 +221,20 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> RestoreReview(int id)
         {
             var result = await mediator.Send(new RestoreReviewCommand(id));
+            return result.ToActionResult();
+        }
+
+        [HttpGet("{id}")]
+        [SwaggerOperation(
+    Summary = "Get review by id",
+    Description = "Retrieves the details of a specific review."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetReviewById(int id)
+        {
+            var result = await mediator.Send(new GetReviewByIdQuery(id));
             return result.ToActionResult();
         }
     }
