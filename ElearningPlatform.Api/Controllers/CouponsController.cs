@@ -5,6 +5,7 @@ using ElearningPlatform.Application.Features.Coupons.Commands.DeleteCoupon;
 using ElearningPlatform.Application.Features.Coupons.Commands.UpdateCoupon;
 using ElearningPlatform.Application.Features.Coupons.Queries.GetCouponById;
 using ElearningPlatform.Application.Features.Coupons.Queries.GetCoupons;
+using ElearningPlatform.Application.Features.Coupons.Queries.GetCouponUsages;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -107,6 +108,23 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var query = new GetCouponByIdQuery(id);
+
+            var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("{couponId}/usages")]
+        [SwaggerOperation(
+    Summary = "Get coupon usages",
+    Description = "Retrieves a paginated list of users who have used the specified coupon."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUsages(
+    int couponId,
+    [FromQuery] GetCouponUsagesQuery query)
+        {
+            query.CouponId = couponId;
 
             var result = await mediator.Send(query);
             return result.ToActionResult();
