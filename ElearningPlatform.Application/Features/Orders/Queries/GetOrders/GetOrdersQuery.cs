@@ -17,6 +17,13 @@ namespace ElearningPlatform.Application.Features.Orders.Queries.GetOrders
         public int PageNumber { get; set; } = 1;
 
         public int PageSize { get; set; } = 10;
+        public DateTime? From { get; set; }
+
+        public DateTime? To { get; set; }
+
+        public decimal? MinAmount { get; set; }
+
+        public decimal? MaxAmount { get; set; }
 
         public string? Search { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
+using ElearningPlatform.Application.Features.Orders.Commands.CancelOrder;
 using ElearningPlatform.Application.Features.Orders.Commands.Checkout;
 using ElearningPlatform.Application.Features.Orders.Queries.GetMyOrders;
 using ElearningPlatform.Application.Features.Orders.Queries.GetOrderDetails;
@@ -70,6 +71,21 @@ namespace ElearningPlatform.Api.Controllers
     [FromQuery] GetOrdersQuery query)
         {
             var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpPost("{orderId}/cancel")]
+        [SwaggerOperation(
+    Summary = "Cancel order",
+    Description = "Cancels a pending order."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CancelOrder(int orderId)
+        {
+            var result = await mediator.Send(
+                new CancelOrderCommand(orderId));
+
             return result.ToActionResult();
         }
     }

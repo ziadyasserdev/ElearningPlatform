@@ -42,7 +42,17 @@ namespace ElearningPlatform.Application.Features.Orders.Queries.GetOrders
                     x.Student.FullName.Contains(search) ||
                     x.Student.Email!.Contains(search));
             }
+            if (request.From.HasValue)
+                query = query.Where(x => x.CreatedAt >= request.From);
 
+            if (request.To.HasValue)
+                query = query.Where(x => x.CreatedAt <= request.To);
+
+            if (request.MinAmount.HasValue)
+                query = query.Where(x => x.TotalAmount >= request.MinAmount);
+
+            if (request.MaxAmount.HasValue)
+                query = query.Where(x => x.TotalAmount <= request.MaxAmount);
             if (request.Status.HasValue)
             {
                 query = query.Where(x =>
