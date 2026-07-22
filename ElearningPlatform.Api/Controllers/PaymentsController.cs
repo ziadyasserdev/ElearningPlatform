@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Features.Payments.Commands.CreatePaymentIntent;
+using ElearningPlatform.Application.Features.Payments.Queries.GetMyPayments;
 using ElearningPlatform.Application.Features.Payments.Queries.GetPaymentDetails;
 using ElearningPlatform.Infrastructure.Payments;
 using MediatR;
@@ -71,6 +72,19 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetById(int paymentId)
         {
             var result = await mediator.Send(new GetPaymentDetailsQuery(paymentId));
+            return result.ToActionResult();
+        }
+        [HttpGet("my-payments")]
+        [SwaggerOperation(
+    Summary = "Get my payments",
+    Description = "Retrieves a paginated list of the authenticated user's payments."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyPayments(
+    [FromQuery] GetMyPaymentsQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
