@@ -14,6 +14,7 @@ using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentDe
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentStatistics;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetMyEnrolled;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetRecentCourses;
+using ElearningPlatform.Application.Features.Enrollments.Queries.GetStudentEnrollments;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -179,6 +180,23 @@ namespace ElearningPlatform.Api.Controllers
     [FromQuery] GetCourseStudentsQuery query)
         {
             query.CourseId = courseId;
+
+            var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("students/{studentId}/enrollments")]
+        [SwaggerOperation(
+    Summary = "Get student enrollments",
+    Description = "Retrieves a paginated list of enrollments for the specified student."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStudentEnrollments(
+    string studentId,
+    [FromQuery] GetStudentEnrollmentsQuery query)
+        {
+            query.StudentId = studentId;
 
             var result = await mediator.Send(query);
             return result.ToActionResult();
