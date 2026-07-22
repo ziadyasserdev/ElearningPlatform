@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Coupons.Commands.ChangeCouponStatus
 using ElearningPlatform.Application.Features.Coupons.Commands.CreateCoupon;
 using ElearningPlatform.Application.Features.Coupons.Commands.DeleteCoupon;
 using ElearningPlatform.Application.Features.Coupons.Commands.UpdateCoupon;
+using ElearningPlatform.Application.Features.Coupons.Queries.GetCouponById;
 using ElearningPlatform.Application.Features.Coupons.Queries.GetCoupons;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -92,6 +93,21 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetCoupons(
     [FromQuery] GetCouponsQuery query)
         {
+            var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("{id}")]
+        [SwaggerOperation(
+    Summary = "Get coupon by id",
+    Description = "Retrieves the details of a specific coupon by its ID."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var query = new GetCouponByIdQuery(id);
+
             var result = await mediator.Send(query);
             return result.ToActionResult();
         }
