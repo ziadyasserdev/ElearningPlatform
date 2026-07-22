@@ -14,8 +14,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Authentications\Queries\" />
-    <Folder Include="Features\Coupons\Dtos\" />
-    <Folder Include="Features\Coupons\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

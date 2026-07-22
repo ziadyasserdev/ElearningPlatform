@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Coupons.Commands.ChangeCouponStatus
 using ElearningPlatform.Application.Features.Coupons.Commands.CreateCoupon;
 using ElearningPlatform.Application.Features.Coupons.Commands.DeleteCoupon;
 using ElearningPlatform.Application.Features.Coupons.Commands.UpdateCoupon;
+using ElearningPlatform.Application.Features.Coupons.Queries.GetCoupons;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -79,6 +80,19 @@ namespace ElearningPlatform.Api.Controllers
             command.Id = id;
 
             var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpGet]
+        [SwaggerOperation(
+    Summary = "Get coupons",
+    Description = "Retrieves a paginated list of coupons with optional search and filtering."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetCoupons(
+    [FromQuery] GetCouponsQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
