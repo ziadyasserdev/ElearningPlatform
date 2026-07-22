@@ -21,9 +21,7 @@ namespace ElearningPlatform.Infrastructure.Persistence.Configuration
             builder.Property(r => r.Comment)
                 .HasMaxLength(1000);
 
-            builder.Property(r => r.IsApproved)
-                .HasDefaultValue(false);
-
+         
           
             builder.HasOne(r => r.Student)
                 .WithMany(u => u.Reviews)
