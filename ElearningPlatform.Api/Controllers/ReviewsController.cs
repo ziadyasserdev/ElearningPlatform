@@ -9,6 +9,7 @@ using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetAllReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetDeletedReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetPendingReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetReviewById;
@@ -235,6 +236,19 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetReviewById(int id)
         {
             var result = await mediator.Send(new GetReviewByIdQuery(id));
+            return result.ToActionResult();
+        }
+        [HttpGet("deleted")]
+        [SwaggerOperation(
+    Summary = "Get deleted reviews",
+    Description = "Retrieves a paginated list of soft-deleted reviews."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetDeletedReviews(
+    [FromQuery] GetDeletedReviewsQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
