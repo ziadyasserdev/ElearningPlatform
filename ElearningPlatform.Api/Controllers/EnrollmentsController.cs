@@ -8,8 +8,10 @@ using ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAllEnro
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetCompletedCourses;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetContinueWatching;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetCourseProgress;
+using ElearningPlatform.Application.Features.Enrollments.Queries.GetCourseStudents;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentById;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentDetails;
+using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentStatistics;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetMyEnrolled;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetRecentCourses;
 using MediatR;
@@ -150,6 +152,35 @@ namespace ElearningPlatform.Api.Controllers
         {
             var result = await mediator.Send(new GetCompletedCoursesQuery());
 
+            return result.ToActionResult();
+        }
+        [HttpGet("statistics")]
+        [SwaggerOperation(
+    Summary = "Get enrollment statistics",
+    Description = "Retrieves overall enrollment statistics."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetEnrollmentStatistics()
+        {
+            var result = await mediator.Send(new GetEnrollmentStatisticsQuery());
+            return result.ToActionResult();
+        }
+        [HttpGet("courses/{courseId}/students")]
+        [SwaggerOperation(
+    Summary = "Get course students",
+    Description = "Retrieves a paginated list of students enrolled in the specified course."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCourseStudents(
+    int courseId,
+    [FromQuery] GetCourseStudentsQuery query)
+        {
+            query.CourseId = courseId;
+
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }

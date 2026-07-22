@@ -43,7 +43,7 @@ namespace ElearningPlatform.Infrastructure.Repositories
 
         public IQuestionsRepository Questions { get; private set; }
 
-        public IAnswerRepository Answers { get; private set; }
+     
 
         public IAssignmentAttachmentRepository AssignmentAttachments { get;private set; }
 
@@ -61,9 +61,12 @@ namespace ElearningPlatform.Infrastructure.Repositories
 
         public IPaymentRepository Payments { get; private set; }
 
+        public IAnswerRepository Answers { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
+            Answers = new AnswerRepository(_context);
             Payments = new PaymentRepository(_context);
             Orders = new OrderRepository(_context);
             OrderItems = new OrderItemRepository(_context);
@@ -72,7 +75,7 @@ namespace ElearningPlatform.Infrastructure.Repositories
             CouponUsages = new CouponUsageRepository(_context);
             CartItems = new CartItemRepository(_context);
             AssignmentAttachments = new AssignmentAttachmentRepository(_context);
-            Answers = new AnswerRepository(_context);
+           
             Questions = new QuestionsRepository(_context);
             ExamAttempts = new ExamAttemptsRepository(_context);
             videoComments = new VideoCommentRepository(_context);

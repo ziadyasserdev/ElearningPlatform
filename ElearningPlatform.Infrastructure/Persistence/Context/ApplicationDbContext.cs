@@ -32,7 +32,7 @@ namespace ElearningPlatform.Infrastructure.Persistence.Context
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<Question> Questions { get; set; }
-        public DbSet<Answer> Answers { get; set; }
+    public DbSet<Answer> Answers { get; set; }
         public DbSet<ExamAttempt> ExamAttempts { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
         public DbSet<Assignment> Assignments { get; set; }

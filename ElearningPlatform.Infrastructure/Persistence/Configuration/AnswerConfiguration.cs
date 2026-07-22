@@ -32,4 +32,5 @@ namespace ElearningPlatform.Infrastructure.Persistence.Configuration
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
 }

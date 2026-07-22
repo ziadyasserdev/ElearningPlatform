@@ -23,7 +23,7 @@ namespace ElearningPlatform.Application.Contracts.Repositories
         IEnrollmentRepository Enrollments { get; }
         IQuestionsRepository Questions { get; }
         IVideoCommentRepository videoComments { get; }
-        IAnswerRepository Answers { get; }
+       IAnswerRepository Answers { get; }   
         IExamAttemptsRepository ExamAttempts { get; }
         // Assignments & Exams
         IAssignmentRepository Assignments { get; }

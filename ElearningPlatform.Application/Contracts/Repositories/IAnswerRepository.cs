@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ElearningPlatform.Application.Contracts.Repositories
 {
-    public interface IAnswerRepository:IGenericRepository<Answer>
+    public interface IAnswerRepository : IGenericRepository<Answer>
     {
     }
 }
