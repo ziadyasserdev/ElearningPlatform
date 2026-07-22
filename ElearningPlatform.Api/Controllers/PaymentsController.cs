@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Features.Payments.Commands.CreatePaymentIntent;
+using ElearningPlatform.Application.Features.Payments.Queries.GetPaymentDetails;
 using ElearningPlatform.Infrastructure.Payments;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -58,6 +59,19 @@ namespace ElearningPlatform.Api.Controllers
                 signature!);
 
             return Ok();
+        }
+        [HttpGet("{paymentId}")]
+        [SwaggerOperation(
+    Summary = "Get payment details",
+    Description = "Retrieves the details of a specific payment by its ID."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int paymentId)
+        {
+            var result = await mediator.Send(new GetPaymentDetailsQuery(paymentId));
+            return result.ToActionResult();
         }
     }
 }
