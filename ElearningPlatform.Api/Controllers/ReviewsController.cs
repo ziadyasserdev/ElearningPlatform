@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
+using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,24 @@ namespace ElearningPlatform.Api.Controllers
     [FromBody] CreateReviewCommand command)
         {
             command.CourseId = courseId;
+
+            var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpPut("{id}")]
+        [SwaggerOperation(
+    Summary = "Update review",
+    Description = "Updates an existing review."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateReview(
+    int id,
+    [FromBody] UpdateReviewCommand command)
+        {
+            command.Id = id;
 
             var result = await mediator.Send(command);
             return result.ToActionResult();
