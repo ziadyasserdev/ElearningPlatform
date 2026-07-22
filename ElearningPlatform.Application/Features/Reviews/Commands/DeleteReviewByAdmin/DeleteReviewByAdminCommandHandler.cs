@@ -10,15 +10,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview
+namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewByAdmin
 {
-    public class DeleteReviewCommandHandler
-       : IRequestHandler<DeleteReviewCommand, Result<string>>
+    public class DeleteReviewByAdminCommandHandler
+      : IRequestHandler<DeleteReviewByAdminCommand, Result<string>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
 
-        public DeleteReviewCommandHandler(
+        public DeleteReviewByAdminCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService)
         {
@@ -27,7 +27,7 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview
         }
 
         public async Task<Result<string>> Handle(
-            DeleteReviewCommand request,
+            DeleteReviewByAdminCommand request,
             CancellationToken cancellationToken)
         {
             if (!currentUserService.IsAuthenticated)
@@ -37,11 +37,11 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview
                     "Authentication required.");
             }
 
-            if (!currentUserService.IsInRole("Student"))
+            if (!currentUserService.IsInRole("Admin"))
             {
                 return Result<string>.Failure(
                     ResultStatus.Forbidden,
-                    "Only students can delete reviews.");
+                    "Only administrators can delete reviews.");
             }
 
             var review = await unitOfWork.Reviews.Query()
@@ -57,21 +57,14 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview
                     "Review not found.");
             }
 
-            if (review.StudentId != currentUserService.UserId)
-            {
-                return Result<string>.Failure(
-                    ResultStatus.Forbidden,
-                    "You can delete only your review.");
-            }
-
             var wasApproved = review.Status == ReviewStatus.Approved;
             var courseId = review.CourseId;
 
             review.IsDeleted = true;
-            review.DeletedAt = DateTime.Now;
+            review.DeletedAt = DateTime.UtcNow;
             review.DeletedBy = currentUserService.UserName;
 
-      
+            unitOfWork.Reviews.Update(review);
 
             await unitOfWork.SaveAsync();
 
@@ -90,8 +83,7 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview
                             x.Status == ReviewStatus.Approved &&
                             !x.IsDeleted);
 
-                    course.TotalReviews = await approvedReviews
-                        .CountAsync(cancellationToken);
+                    course.TotalReviews = await approvedReviews.CountAsync(cancellationToken);
 
                     course.AverageRating = course.TotalReviews == 0
                         ? 0

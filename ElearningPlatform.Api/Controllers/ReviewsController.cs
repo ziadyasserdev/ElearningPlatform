@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Features.Reviews.Commands.ApproveReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
+using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewByAdmin;
 using ElearningPlatform.Application.Features.Reviews.Commands.RejectReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetAllReviews;
@@ -188,6 +189,21 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetReviewStatistics()
         {
             var result = await mediator.Send(new GetReviewStatisticsQuery());
+            return result.ToActionResult();
+        }
+        [HttpDelete("{id}/admin")]
+        [SwaggerOperation(
+    Summary = "Delete review by admin",
+    Description = "Deletes the specified review by an administrator."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteReviewByAdmin(int id)
+        {
+            var result = await mediator.Send(new DeleteReviewByAdminCommand(id));
             return result.ToActionResult();
         }
     }
