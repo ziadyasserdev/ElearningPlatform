@@ -7,6 +7,7 @@ using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetPendingReviews;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -147,6 +148,19 @@ namespace ElearningPlatform.Api.Controllers
             command.Id = id;
 
             var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpGet("pending")]
+        [SwaggerOperation(
+    Summary = "Get pending reviews",
+    Description = "Retrieves a paginated list of pending reviews with optional filtering."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetPendingReviews(
+    [FromQuery] GetPendingReviewsQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
