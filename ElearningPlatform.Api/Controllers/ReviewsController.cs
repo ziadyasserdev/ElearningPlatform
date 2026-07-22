@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.RejectReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetAllReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
@@ -159,6 +160,19 @@ namespace ElearningPlatform.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetPendingReviews(
     [FromQuery] GetPendingReviewsQuery query)
+        {
+            var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet]
+        [SwaggerOperation(
+    Summary = "Get all reviews",
+    Description = "Retrieves a paginated list of reviews with optional filtering by status, rating, date range, and search keyword."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllReviews(
+    [FromQuery] GetAllReviewsQuery query)
         {
             var result = await mediator.Send(query);
             return result.ToActionResult();
