@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Features.Reviews.Commands.ApproveReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
+using ElearningPlatform.Application.Features.Reviews.Commands.RejectReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
@@ -128,6 +129,24 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> ApproveReview(int id)
         {
             var result = await mediator.Send(new ApproveReviewCommand(id));
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id}/reject")]
+        [SwaggerOperation(
+    Summary = "Reject review",
+    Description = "Rejects the specified review with a rejection reason."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RejectReview(
+    int id,
+    [FromBody] RejectReviewCommand command)
+        {
+            command.Id = id;
+
+            var result = await mediator.Send(command);
             return result.ToActionResult();
         }
     }
