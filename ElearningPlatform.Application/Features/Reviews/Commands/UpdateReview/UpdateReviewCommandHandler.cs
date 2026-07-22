@@ -74,12 +74,12 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview
             review.ReviewedAt = null;
             review.ReviewedBy = null;
 
-            review.EditedAt = DateTime.UtcNow;
+            review.EditedAt = DateTime.Now;
 
-            review.UpdatedAt = DateTime.UtcNow;
+            review.UpdatedAt = DateTime.Now;
             review.UpdatedBy = currentUserService.UserName;
 
-            unitOfWork.Reviews.Update(review);
+         
 
             await unitOfWork.SaveAsync();
 

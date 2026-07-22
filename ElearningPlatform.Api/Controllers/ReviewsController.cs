@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,19 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> DeleteReview(int id)
         {
             var result = await mediator.Send(new DeleteReviewCommand(id));
+            return result.ToActionResult();
+        }
+        [HttpGet("my-reviews")]
+        [SwaggerOperation(
+    Summary = "Get my reviews",
+    Description = "Retrieves a paginated list of the authenticated user's reviews."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyReviews(
+    [FromQuery] GetMyReviewsQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
