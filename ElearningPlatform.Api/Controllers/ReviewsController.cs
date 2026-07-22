@@ -9,6 +9,7 @@ using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviewSummary;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetMyReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetPendingReviews;
+using ElearningPlatform.Application.Features.Reviews.Queries.GetReviewStatistics;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -175,6 +176,18 @@ namespace ElearningPlatform.Api.Controllers
     [FromQuery] GetAllReviewsQuery query)
         {
             var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("statistics")]
+        [SwaggerOperation(
+    Summary = "Get review statistics",
+    Description = "Retrieves overall review statistics."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetReviewStatistics()
+        {
+            var result = await mediator.Send(new GetReviewStatisticsQuery());
             return result.ToActionResult();
         }
     }
