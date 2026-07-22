@@ -10,15 +10,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewByAdmin
+namespace ElearningPlatform.Application.Features.Reviews.Commands.RestoreReview
 {
-    public class DeleteReviewByAdminCommandHandler
-      : IRequestHandler<DeleteReviewByAdminCommand, Result<string>>
+
+    public class RestoreReviewCommandHandler
+        : IRequestHandler<RestoreReviewCommand, Result<string>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
 
-        public DeleteReviewByAdminCommandHandler(
+        public RestoreReviewCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService)
         {
@@ -27,7 +28,7 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewBy
         }
 
         public async Task<Result<string>> Handle(
-            DeleteReviewByAdminCommand request,
+            RestoreReviewCommand request,
             CancellationToken cancellationToken)
         {
             if (!currentUserService.IsAuthenticated)
@@ -41,45 +42,43 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewBy
             {
                 return Result<string>.Failure(
                     ResultStatus.Forbidden,
-                    "Only administrators can delete reviews.");
+                    "Only administrators can restore reviews.");
             }
 
             var review = await unitOfWork.Reviews.Query()
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(x =>
                     x.Id == request.Id &&
-                    !x.IsDeleted,
+                    x.IsDeleted,
                     cancellationToken);
 
             if (review == null)
             {
                 return Result<string>.Failure(
                     ResultStatus.NotFound,
-                    "Review not found.");
+                    "Deleted review not found.");
             }
 
-            var wasApproved = review.Status == ReviewStatus.Approved;
-            var courseId = review.CourseId;
-
-            review.IsDeleted = true;
-            review.DeletedAt = DateTime.Now;
-            review.DeletedBy = currentUserService.UserName;
+            review.IsDeleted = false;
+            review.DeletedAt = null;
+            review.DeletedBy = null;
 
             unitOfWork.Reviews.Update(review);
 
             await unitOfWork.SaveAsync();
 
-            if (wasApproved)
+            if (review.Status == ReviewStatus.Approved)
             {
                 var course = await unitOfWork.Courses.Query()
                     .FirstOrDefaultAsync(x =>
-                        x.Id == courseId,
+                        x.Id == review.CourseId,
                         cancellationToken);
 
                 if (course != null)
                 {
                     var approvedReviews = unitOfWork.Reviews.Query()
                         .Where(x =>
-                            x.CourseId == courseId &&
+                            x.CourseId == review.CourseId &&
                             x.Status == ReviewStatus.Approved &&
                             !x.IsDeleted);
 
@@ -97,7 +96,7 @@ namespace ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewBy
             }
 
             return Result<string>.Success(
-                "Review deleted successfully.");
+                "Review restored successfully.");
         }
     }
 }

@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Reviews.Commands.CreateReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.DeleteReviewByAdmin;
 using ElearningPlatform.Application.Features.Reviews.Commands.RejectReview;
+using ElearningPlatform.Application.Features.Reviews.Commands.RestoreReview;
 using ElearningPlatform.Application.Features.Reviews.Commands.UpdateReview;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetAllReviews;
 using ElearningPlatform.Application.Features.Reviews.Queries.GetCourseReviews;
@@ -204,6 +205,21 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> DeleteReviewByAdmin(int id)
         {
             var result = await mediator.Send(new DeleteReviewByAdminCommand(id));
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id}/restore")]
+        [SwaggerOperation(
+    Summary = "Restore review",
+    Description = "Restores a previously deleted review."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RestoreReview(int id)
+        {
+            var result = await mediator.Send(new RestoreReviewCommand(id));
             return result.ToActionResult();
         }
     }
