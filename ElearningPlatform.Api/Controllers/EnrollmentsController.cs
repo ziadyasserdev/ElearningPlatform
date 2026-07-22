@@ -16,6 +16,7 @@ using ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentSt
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetMyEnrolled;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetRecentCourses;
 using ElearningPlatform.Application.Features.Enrollments.Queries.GetStudentEnrollments;
+using ElearningPlatform.Application.Features.Enrollments.Queries.SearchEnrollments;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +39,7 @@ namespace ElearningPlatform.Api.Controllers
       Summary = "Get all enrollments",
       Description = "Retrieves all enrollments with filtering, searching and pagination."
   )]
-        [ProducesResponseType(typeof(Result<List<AdminEnrollmentDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<List<AdminEnrollmentDtoo>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllEnrollments(
       [FromQuery] GetAllEnrollmentsQuery query)
         {
@@ -50,7 +51,7 @@ namespace ElearningPlatform.Api.Controllers
     Summary = "Get enrollment by id",
     Description = "Retrieves enrollment details by enrollment id."
 )]
-        [ProducesResponseType(typeof(Result<AdminEnrollmentDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<AdminEnrollmentDtoo>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEnrollmentById(int id)
         {
             var result = await mediator.Send(new GetEnrollmentByIdQuery
@@ -211,6 +212,19 @@ namespace ElearningPlatform.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetEnrollmentAnalytics(
     [FromQuery] GetEnrollmentAnalyticsQuery query)
+        {
+            var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpGet("search")]
+        [SwaggerOperation(
+    Summary = "Search enrollments",
+    Description = "Searches enrollments with optional filters such as status, date range, and search keyword."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> SearchEnrollments(
+    [FromQuery] SearchEnrollmentsQuery query)
         {
             var result = await mediator.Send(query);
             return result.ToActionResult();

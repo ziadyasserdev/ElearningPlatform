@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentById
 {
     public class GetEnrollmentByIdQuery
-        : IRequest<Result<AdminEnrollmentDto>>
+        : IRequest<Result<AdminEnrollmentDtoo>>
     {
         public int Id { get; set; }
     }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAllEnrollments
 {
     public class GetAllEnrollmentsQuery
-       : IRequest<Result<List<AdminEnrollmentDto>>>
+       : IRequest<Result<List<AdminEnrollmentDtoo>>>
     {
         public int PageNumber { get; set; } = 1;
 
@@ -22,7 +22,7 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAll
 
         public string? Search { get; set; }
     }
-    public class AdminEnrollmentDto
+    public class AdminEnrollmentDtoo
     {
         public int Id { get; set; }
 

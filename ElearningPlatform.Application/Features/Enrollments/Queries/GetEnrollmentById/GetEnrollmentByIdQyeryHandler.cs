@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollmentById
 {
     public class GetEnrollmentByIdQueryHandler
-        : IRequestHandler<GetEnrollmentByIdQuery, Result<AdminEnrollmentDto>>
+        : IRequestHandler<GetEnrollmentByIdQuery, Result<AdminEnrollmentDtoo>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
@@ -26,12 +26,12 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollme
             this.currentUserService = currentUserService;
         }
 
-        public async Task<Result<AdminEnrollmentDto>> Handle(
+        public async Task<Result<AdminEnrollmentDtoo>> Handle(
             GetEnrollmentByIdQuery request,
             CancellationToken cancellationToken)
         {
             if(!currentUserService.IsAuthenticated)
-                return Result<AdminEnrollmentDto>.Failure(ResultStatus.Unauthorized, "Authentication required");
+                return Result<AdminEnrollmentDtoo>.Failure(ResultStatus.Unauthorized, "Authentication required");
             var query = unitOfWork.Enrollments.Query()
                 .Include(x => x.Course)
                     .ThenInclude(x => x.Instructor)
@@ -47,12 +47,12 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollme
             }
             else if (!currentUserService.IsInRole("Admin"))
             {
-                return Result<AdminEnrollmentDto>
+                return Result<AdminEnrollmentDtoo>
                     .Failure(ResultStatus.Forbidden, "Not allowed");
             }
 
             var enrollment = await query
-                .Select(x => new AdminEnrollmentDto
+                .Select(x => new AdminEnrollmentDtoo
                 {
                     Id = x.Id,
 
@@ -75,11 +75,11 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.GetEnrollme
 
             if (enrollment == null)
             {
-                return Result<AdminEnrollmentDto>
+                return Result<AdminEnrollmentDtoo>
                     .Failure(ResultStatus.NotFound, "Enrollment not found");
             }
 
-            return Result<AdminEnrollmentDto>.Success(enrollment);
+            return Result<AdminEnrollmentDtoo>.Success(enrollment);
         }
     }
 }

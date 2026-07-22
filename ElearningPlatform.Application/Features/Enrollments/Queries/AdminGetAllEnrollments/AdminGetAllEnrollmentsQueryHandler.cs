@@ -14,7 +14,7 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAll
 {
 
     public class GetAllEnrollmentsQueryHandler
-        : IRequestHandler<GetAllEnrollmentsQuery, Result<List<AdminEnrollmentDto>>>
+        : IRequestHandler<GetAllEnrollmentsQuery, Result<List<AdminEnrollmentDtoo>>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
@@ -27,12 +27,12 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAll
             this.currentUserService = currentUserService;
         }
 
-        public async Task<Result<List<AdminEnrollmentDto>>> Handle(
+        public async Task<Result<List<AdminEnrollmentDtoo>>> Handle(
             GetAllEnrollmentsQuery request,
             CancellationToken cancellationToken)
         {
             if(!currentUserService.IsAuthenticated)
-                return Result<List<AdminEnrollmentDto>>.Failure(ResultStatus.Unauthorized, "Authentication required");
+                return Result<List<AdminEnrollmentDtoo>>.Failure(ResultStatus.Unauthorized, "Authentication required");
             var query = unitOfWork.Enrollments.Query()
                 .Include(x => x.Course)
                     .ThenInclude(x => x.Instructor)
@@ -48,7 +48,7 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAll
             }
             else if (!currentUserService.IsInRole("Admin"))
             {
-                return Result<List<AdminEnrollmentDto>>
+                return Result<List<AdminEnrollmentDtoo>>
                     .Failure(ResultStatus.Forbidden, "Not allowed");
             }
 
@@ -75,7 +75,7 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAll
                 .OrderByDescending(x => x.EnrolledAt)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .Select(x => new AdminEnrollmentDto
+                .Select(x => new AdminEnrollmentDtoo
                 {
                     Id = x.Id,
 
@@ -96,7 +96,7 @@ namespace ElearningPlatform.Application.Features.Enrollments.Queries.AdminGetAll
                 })
                 .ToListAsync(cancellationToken);
 
-            return Result<List<AdminEnrollmentDto>>
+            return Result<List<AdminEnrollmentDtoo>>
                 .Success(enrollments);
         }
     }
