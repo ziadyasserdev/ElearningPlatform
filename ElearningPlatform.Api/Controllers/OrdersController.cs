@@ -2,6 +2,7 @@
 using ElearningPlatform.Application.Features.Orders.Commands.Checkout;
 using ElearningPlatform.Application.Features.Orders.Queries.GetMyOrders;
 using ElearningPlatform.Application.Features.Orders.Queries.GetOrderDetails;
+using ElearningPlatform.Application.Features.Orders.Queries.GetOrders;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,19 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
             var result = await mediator.Send(new GetOrderDetailsQuery(orderId));
+            return result.ToActionResult();
+        }
+        [HttpGet]
+        [SwaggerOperation(
+    Summary = "Get orders",
+    Description = "Retrieves a paginated list of orders with optional search and status filtering."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetOrders(
+    [FromQuery] GetOrdersQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }

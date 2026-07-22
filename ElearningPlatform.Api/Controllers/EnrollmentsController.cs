@@ -1,7 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Common.Results;
-using ElearningPlatform.Application.Features.Enrollments.Commands.CancelEnrollment;
-using ElearningPlatform.Application.Features.Enrollments.Commands.EnrollInCourse;
+
 using ElearningPlatform.Application.Features.Enrollments.Commands.MarkCourseAsCompleted;
 
 using ElearningPlatform.Application.Features.Enrollments.Dtos;
@@ -57,18 +56,7 @@ namespace ElearningPlatform.Api.Controllers
 
             return result.ToActionResult();
         }
-        [HttpPost("enroll")]
-        [SwaggerOperation(
-      Summary = "Enroll in course",
-      Description = "Enroll the current user into a specific course."
-  )]
-        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Enroll([FromBody] EnrollInCourseCommand command)
-        {
-            var result = await mediator.Send(command);
-            return result.ToActionResult();
-        }
-
+       
      
         [HttpGet("my-enrolled-courses")]
         [SwaggerOperation(
@@ -151,21 +139,7 @@ namespace ElearningPlatform.Api.Controllers
 
             return result.ToActionResult();
         }
-        [HttpDelete("{courseId}")]
-        [SwaggerOperation(
-    Summary = "Cancel enrollment",
-    Description = "Cancels the student's enrollment in the specified course."
-)]
-        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CancelEnrollment(int courseId)
-        {
-            var result = await mediator.Send(new CancelEnrollmentCommand
-            {
-                CourseId = courseId
-            });
-
-            return result.ToActionResult();
-        }
+      
         [HttpGet("completed-courses")]
         [SwaggerOperation(
     Summary = "Get completed courses",
