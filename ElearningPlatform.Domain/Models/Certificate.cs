@@ -13,13 +13,28 @@ namespace ElearningPlatform.Domain.Models
 
         public int CourseId { get; set; }
 
-        public string CertificateUrl { get; set; } = string.Empty;
+      
+        public string CertificateNumber { get; set; } = null!;
 
-        public string VerificationCode { get; set; } = string.Empty;
+       
+        public string VerificationCode { get; set; } = null!;
+
+     
+        public string CertificateUrl { get; set; } = null!;
 
         public DateTime IssuedAt { get; set; }
 
-        public bool IsValid { get; set; } = true;
+      
+        public bool IsRevoked { get; set; }
+
+        public DateTime? RevokedAt { get; set; }
+
+        public string? RevokedReason { get; set; }
+
+        
+        public int DownloadCount { get; set; }
+
+        public DateTime? LastDownloadedAt { get; set; }
 
         public ApplicationUser Student { get; set; } = null!;
 

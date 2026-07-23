@@ -34,7 +34,7 @@ namespace ElearningPlatform.Domain.Identity
         public bool IsLocked { get; set; } = false;
         public DateTime? LockedAt { get; set; }
         public string? LockedByAdminId { get; set; }
-
+        public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
         public ICollection<VideoProgress> VideoProgresses { get; set; }
         public ICollection<Course> Courses { get; set; } = new List<Course>();
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();

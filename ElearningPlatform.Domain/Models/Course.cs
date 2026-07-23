@@ -42,6 +42,7 @@ namespace ElearningPlatform.Domain.Models
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Exam> Exams { get; set; }
         public ICollection<Assignment> Assignments { get; set; }
+        public ICollection<Certificate> Certificates { get; set; } = new HashSet<Certificate>();
     }
 
 }

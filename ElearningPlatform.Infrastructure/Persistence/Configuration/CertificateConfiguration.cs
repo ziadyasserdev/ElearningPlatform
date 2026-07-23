@@ -9,34 +9,65 @@ using System.Threading.Tasks;
 
 namespace ElearningPlatform.Infrastructure.Persistence.Configuration
 {
-    public class CertificateConfiguration : IEntityTypeConfiguration<Certificate>
+    public class CertificateConfiguration
+       : IEntityTypeConfiguration<Certificate>
     {
         public void Configure(EntityTypeBuilder<Certificate> builder)
         {
-            builder.ToTable("Certificates");
+            builder.HasKey(x => x.Id);
 
-            builder.Property(c => c.CertificateUrl)
-                .IsRequired()
-                .HasMaxLength(500);
+            builder.Property(x => x.StudentId)
+                .IsRequired();
 
-            builder.Property(c => c.VerificationCode)
+            builder.Property(x => x.CourseId)
+                .IsRequired();
+
+            builder.Property(x => x.CertificateNumber)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.Property(c => c.IsValid)
-                .HasDefaultValue(true);
+            builder.HasIndex(x => x.CertificateNumber)
+                .IsUnique();
 
-         
+            builder.Property(x => x.VerificationCode)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            builder.HasOne(c => c.Student)
-                .WithMany()
-                .HasForeignKey(c => c.StudentId)
+            builder.HasIndex(x => x.VerificationCode)
+                .IsUnique();
+
+            builder.Property(x => x.CertificateUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            builder.Property(x => x.IssuedAt)
+                .IsRequired();
+
+            builder.Property(x => x.IsRevoked)
+                .HasDefaultValue(false);
+
+            builder.Property(x => x.RevokedReason)
+                .HasMaxLength(500);
+
+            builder.Property(x => x.DownloadCount)
+                .HasDefaultValue(0);
+
+            builder.HasOne(x => x.Student)
+                .WithMany(x => x.Certificates)
+                .HasForeignKey(x => x.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(c => c.Course)
-                .WithMany()
-                .HasForeignKey(c => c.CourseId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(x => x.Course)
+                .WithMany(x => x.Certificates)
+                .HasForeignKey(x => x.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+           
+            builder.HasIndex(x => new
+            {
+                x.StudentId,
+                x.CourseId
+            }).IsUnique();
         }
     }
 }
