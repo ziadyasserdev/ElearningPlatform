@@ -10,6 +10,7 @@ using ElearningPlatform.Infrastructure.Payments;
 using ElearningPlatform.Infrastructure.Persistence.Context;
 using ElearningPlatform.Infrastructure.Repositories;
 using ElearningPlatform.Infrastructure.Services;
+using ElearningPlatform.Infrastructure.Services.Certificates;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +50,7 @@ namespace ElearningPlatform.Infrastructure.Extensions
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IMediaService, MediaService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICertificateGenerator, CertificateGenerator>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPaymentService, StripePaymentService>();
             services.Configure<StripeOptions>(

@@ -1,6 +1,7 @@
 ﻿using ElearningPlatform.Application.Common.Results;
 using ElearningPlatform.Application.Contracts.Identity;
 using ElearningPlatform.Application.Contracts.Repositories;
+using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Domain.Enums;
 using ElearningPlatform.Domain.Models;
 using MediatR;
@@ -14,17 +15,20 @@ using System.Threading.Tasks;
 namespace ElearningPlatform.Application.Features.Certificates.Commands.GenerateCertificate
 {
     public class GenerateCertificateCommandHandler
-          : IRequestHandler<GenerateCertificateCommand, Result<int>>
+         : IRequestHandler<GenerateCertificateCommand, Result<int>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
+        private readonly ICertificateGenerator certificateGenerator;
 
         public GenerateCertificateCommandHandler(
             IUnitOfWork unitOfWork,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            ICertificateGenerator certificateGenerator)
         {
             this.unitOfWork = unitOfWork;
             this.currentUserService = currentUserService;
+            this.certificateGenerator = certificateGenerator;
         }
 
         public async Task<Result<int>> Handle(
@@ -64,7 +68,7 @@ namespace ElearningPlatform.Application.Features.Certificates.Commands.GenerateC
             {
                 return Result<int>.Failure(
                     ResultStatus.Failure,
-                    "You must complete the course before generating a certificate.");
+                    "You must complete the course before generating the certificate.");
             }
 
             var exists = await unitOfWork.Certificates.Query()
@@ -112,30 +116,26 @@ namespace ElearningPlatform.Application.Features.Certificates.Commands.GenerateC
             var certificate = new Certificate
             {
                 StudentId = userId!,
-
                 CourseId = request.CourseId,
-
                 CertificateNumber = certificateNumber,
-
                 VerificationCode = verificationCode,
-
-            
                 CertificateUrl = string.Empty,
-
                 IssuedAt = DateTime.Now,
-
                 IsRevoked = false,
-
                 DownloadCount = 0,
-
                 LastDownloadedAt = null,
-
                 CreatedAt = DateTime.Now,
-
                 CreatedBy = currentUserService.UserName
             };
 
             await unitOfWork.Certificates.AddAsync(certificate);
+
+            await unitOfWork.SaveAsync();
+
+            certificate.CertificateUrl =
+                await certificateGenerator.GenerateAsync(
+                    certificate,
+                    cancellationToken);
 
             await unitOfWork.SaveAsync();
 
