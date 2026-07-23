@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Certificates.Commands.GenerateCertificate;
+using ElearningPlatform.Application.Features.Certificates.Queries.GetMyCertificates;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,18 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GenerateCertificate(int courseId)
         {
             var result = await mediator.Send(new GenerateCertificateCommand(courseId));
+            return result.ToActionResult();
+        }
+        [HttpGet("my-certificates")]
+        [SwaggerOperation(
+    Summary = "Get my certificates",
+    Description = "Retrieves all certificates for the authenticated user."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetMyCertificates()
+        {
+            var result = await mediator.Send(new GetMyCertificatesQuery());
             return result.ToActionResult();
         }
     }
