@@ -1,4 +1,5 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
+using ElearningPlatform.Application.Features.Certificates.Commands.DeleteCertificate;
 using ElearningPlatform.Application.Features.Certificates.Commands.GenerateCertificate;
 using ElearningPlatform.Application.Features.Certificates.Commands.RestoreCertificate;
 using ElearningPlatform.Application.Features.Certificates.Commands.RevokeCertificate;
@@ -151,6 +152,25 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetCertificates([FromQuery] GetCertificatesQuery query)
         {
             var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpDelete("{id}")]
+        [SwaggerOperation(
+    Summary = "Delete certificate",
+    Description = "Deletes a certificate."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteCertificate(int id)
+        {
+            var command = new DeleteCertificateCommand
+            {
+                Id = id
+            };
+
+            var result = await mediator.Send(command);
             return result.ToActionResult();
         }
     }
