@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateAnalytics
 {
     public class GetCertificateAnalyticsQueryHandler
-      : IRequestHandler<GetCertificateAnalyticsQuery, Result<List<CertificateAnalyticsDto>>>
+       : IRequestHandler<GetCertificateAnalyticsQuery, Result<List<CertificateAnalyticsDto>>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ICurrentUserService currentUserService;
@@ -33,39 +34,54 @@ namespace ElearningPlatform.Application.Features.Certificates.Queries.GetCertifi
             if (!currentUserService.IsAuthenticated)
             {
                 return Result<List<CertificateAnalyticsDto>>
-                    .Failure(ResultStatus.Unauthorized,
+                    .Failure(
+                        ResultStatus.Unauthorized,
                         "Authentication required.");
             }
 
             if (!currentUserService.IsInRole("Admin"))
             {
                 return Result<List<CertificateAnalyticsDto>>
-                    .Failure(ResultStatus.Forbidden,
+                    .Failure(
+                        ResultStatus.Forbidden,
                         "Only administrators can access analytics.");
             }
 
-            var data = await unitOfWork.Certificates.Query()
+            var analytics = await unitOfWork.Certificates.Query()
                 .Where(x =>
                     !x.IsDeleted &&
                     x.IssuedAt.Year == request.Year)
                 .GroupBy(x => x.IssuedAt.Month)
-                .Select(g => new CertificateAnalyticsDto
+                .Select(g => new
                 {
-                    Month = new DateTime(request.Year, g.Key, 1)
-                        .ToString("MMMM"),
-
+                    Month = g.Key,
                     GeneratedCertificates = g.Count(),
-
                     Downloads = g.Sum(x => x.DownloadCount)
                 })
-                .OrderBy(x => DateTime.ParseExact(
-                    x.Month,
-                    "MMMM",
-                    System.Globalization.CultureInfo.InvariantCulture).Month)
                 .ToListAsync(cancellationToken);
 
+            var result = Enumerable.Range(1, 12)
+                .Select(month =>
+                {
+                    var data = analytics.FirstOrDefault(x => x.Month == month);
+
+                    return new CertificateAnalyticsDto
+                    {
+                        Month = CultureInfo.InvariantCulture
+                            .DateTimeFormat
+                            .GetMonthName(month),
+
+                        GeneratedCertificates =
+                            data?.GeneratedCertificates ?? 0,
+
+                        Downloads =
+                            data?.Downloads ?? 0
+                    };
+                })
+                .ToList();
+
             return Result<List<CertificateAnalyticsDto>>
-                .Success(data);
+                .Success(result);
         }
     }
 }
