@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Certificates.Commands.GenerateCerti
 using ElearningPlatform.Application.Features.Certificates.Commands.RestoreCertificate;
 using ElearningPlatform.Application.Features.Certificates.Commands.RevokeCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.DownloadCertificate;
+using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateAnalytics;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateDetails;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificates;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateStatistics;
@@ -171,6 +172,19 @@ namespace ElearningPlatform.Api.Controllers
             };
 
             var result = await mediator.Send(command);
+            return result.ToActionResult();
+        }
+        [HttpGet("analytics")]
+        [SwaggerOperation(
+    Summary = "Get certificate analytics",
+    Description = "Retrieves certificate analytics for the specified year."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetCertificateAnalytics(
+    [FromQuery] GetCertificateAnalyticsQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
