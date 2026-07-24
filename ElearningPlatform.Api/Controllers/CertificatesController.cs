@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Features.Certificates.Commands.RestoreCertif
 using ElearningPlatform.Application.Features.Certificates.Commands.RevokeCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.DownloadCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateDetails;
+using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificates;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateStatistics;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetMyCertificates;
 using ElearningPlatform.Application.Features.Certificates.Queries.VerifyCertificate;
@@ -138,6 +139,18 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetCertificateStatistics()
         {
             var result = await mediator.Send(new GetCertificateStatisticsQuery());
+            return result.ToActionResult();
+        }
+        [HttpGet]
+        [SwaggerOperation(
+    Summary = "Get certificates",
+    Description = "Retrieves certificates with filtering and pagination."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetCertificates([FromQuery] GetCertificatesQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
