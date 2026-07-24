@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Certificates.Commands.GenerateCertificate;
+using ElearningPlatform.Application.Features.Certificates.Queries.DownloadCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateDetails;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetMyCertificates;
 using MediatR;
@@ -57,6 +58,19 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> GetCertificateDetails(int id)
         {
             var result = await mediator.Send(new GetCertificateDetailsQuery(id));
+            return result.ToActionResult();
+        }
+        [HttpGet("{id}/download")]
+        [SwaggerOperation(
+    Summary = "Download certificate",
+    Description = "Downloads the certificate for the authenticated user."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DownloadCertificate(int id)
+        {
+            var result = await mediator.Send(new DownloadCertificateQuery(id));
             return result.ToActionResult();
         }
     }
