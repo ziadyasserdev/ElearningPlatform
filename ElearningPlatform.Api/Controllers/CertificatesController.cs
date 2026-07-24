@@ -3,6 +3,7 @@ using ElearningPlatform.Application.Features.Certificates.Commands.GenerateCerti
 using ElearningPlatform.Application.Features.Certificates.Queries.DownloadCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateDetails;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetMyCertificates;
+using ElearningPlatform.Application.Features.Certificates.Queries.VerifyCertificate;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,20 @@ namespace ElearningPlatform.Api.Controllers
         public async Task<IActionResult> DownloadCertificate(int id)
         {
             var result = await mediator.Send(new DownloadCertificateQuery(id));
+            return result.ToActionResult();
+        }
+        [HttpGet("verify")]
+        [SwaggerOperation(
+    Summary = "Verify certificate",
+    Description = "Verifies a certificate using its verification code."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> VerifyCertificate(
+    [FromQuery] VerifyCertificateQuery query)
+        {
+            var result = await mediator.Send(query);
             return result.ToActionResult();
         }
     }
