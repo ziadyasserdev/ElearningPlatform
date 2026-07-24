@@ -1,5 +1,6 @@
 ﻿using ElearningPlatform.Api.Common.Responses;
 using ElearningPlatform.Application.Features.Certificates.Commands.GenerateCertificate;
+using ElearningPlatform.Application.Features.Certificates.Commands.RevokeCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.DownloadCertificate;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetCertificateDetails;
 using ElearningPlatform.Application.Features.Certificates.Queries.GetMyCertificates;
@@ -86,6 +87,24 @@ namespace ElearningPlatform.Api.Controllers
     [FromQuery] VerifyCertificateQuery query)
         {
             var result = await mediator.Send(query);
+            return result.ToActionResult();
+        }
+        [HttpPatch("{id}/revoke")]
+        [SwaggerOperation(
+    Summary = "Revoke certificate",
+    Description = "Revokes a certificate and records the reason for revocation."
+)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RevokeCertificate(
+    int id,
+    [FromBody] RevokeCertificateCommand command)
+        {
+            command.Id = id;
+
+            var result = await mediator.Send(command);
             return result.ToActionResult();
         }
     }
