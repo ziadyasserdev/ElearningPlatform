@@ -4,6 +4,7 @@ using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Contracts.Repositories;
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Domain.Identity;
+using ElearningPlatform.Infrastructure.BackgroundServices;
 using ElearningPlatform.Infrastructure.ExternalServices;
 using ElearningPlatform.Infrastructure.Identity;
 using ElearningPlatform.Infrastructure.Payments;
@@ -48,6 +49,7 @@ namespace ElearningPlatform.Infrastructure.Extensions
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             // تسجيل IHttpContextAccessor
             services.AddScoped<IFileService, FileService>();
+            services.AddHostedService<AssignmentDeadlineWorker>();
             services.AddScoped<IMediaService, MediaService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();

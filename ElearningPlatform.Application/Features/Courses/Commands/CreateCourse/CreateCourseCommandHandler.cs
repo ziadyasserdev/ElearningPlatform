@@ -60,6 +60,7 @@ namespace ElearningPlatform.Application.Features.Courses.Commands.CreateCourse
                 DiscountPrice = request.DiscountPrice,
                 DiscountEndDate = request.DiscountEndDate,
                 CategoryId = request.CategoryId,
+
                 InstructorId = request.InstructorId,
                 Language = request.Language,
                 Level =(CourseLevel)request.Level,
