@@ -50,6 +50,7 @@ namespace ElearningPlatform.Infrastructure.Extensions
             // تسجيل IHttpContextAccessor
             services.AddScoped<IFileService, FileService>();
             services.AddHostedService<AssignmentDeadlineWorker>();
+            services.AddHostedService<AssignmentDeadlineWorker>();
             services.AddScoped<IMediaService, MediaService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();

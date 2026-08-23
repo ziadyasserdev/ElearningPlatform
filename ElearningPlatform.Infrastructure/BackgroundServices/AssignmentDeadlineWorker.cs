@@ -44,6 +44,7 @@ namespace ElearningPlatform.Infrastructure.BackgroundServices
                         result.Value);
                 }
             }
+          
             catch (OperationCanceledException)
                 when (stoppingToken.IsCancellationRequested)
             {
