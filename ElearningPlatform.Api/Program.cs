@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -85,6 +86,26 @@ namespace ElearningPlatform.Api
                     Configuration["JwtSetting:SecretKey"]))
                 };
             });
+
+
+
+
+
+
+            Log.Logger = new LoggerConfiguration()
+       .ReadFrom.Configuration(builder.Configuration)
+       .Enrich.WithProperty(
+           "ApplicationName",
+           typeof(Program).Assembly.GetName().Name)
+       .CreateLogger();
+
+            builder.Host.UseSerilog();
+
+
+
+
+
+
 
 
 
