@@ -4,7 +4,7 @@ using ElearningPlatform.Application.Contracts.Payments;
 using ElearningPlatform.Application.Contracts.Repositories;
 using ElearningPlatform.Application.Contracts.Services;
 using ElearningPlatform.Domain.Identity;
-using ElearningPlatform.Infrastructure.BackgroundServices;
+//using ElearningPlatform.Infrastructure.BackgroundServices;
 using ElearningPlatform.Infrastructure.ExternalServices;
 using ElearningPlatform.Infrastructure.Identity;
 using ElearningPlatform.Infrastructure.Payments;

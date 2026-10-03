@@ -3,53 +3,43 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ElearningPlatform.Infrastructure.BackgroundServices
+public class AssignmentDeadlineWorker : BackgroundService
 {
-    public class AssignmentDeadlineWorker : BackgroundService
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<AssignmentDeadlineWorker> _logger;
+
+    public AssignmentDeadlineWorker(
+        IServiceScopeFactory scopeFactory,
+        ILogger<AssignmentDeadlineWorker> logger)
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<AssignmentDeadlineWorker> _logger;
-        public AssignmentDeadlineWorker(IServiceScopeFactory serviceScope,
-            ILogger<AssignmentDeadlineWorker> _logger)
-        {
-            this._scopeFactory = serviceScope;
-            this._logger = _logger;
-        }
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(
+        CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(
+            TimeSpan.FromMinutes(1));
+
+        _logger.LogInformation(
+            "Assignment deadline worker started.");
+
+        while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                using var scope =
-                    _scopeFactory.CreateScope();
-
-                var mediator =
-                    scope.ServiceProvider
-                        .GetRequiredService<IMediator>();
-
-                var result = await mediator.Send(
-                    new CloseExpiredAssignmentsCommand(),
+                await CloseExpiredAssignmentsAsync(
                     stoppingToken);
-
-                if (result.IsSuccess)
-                {
-                    _logger.LogInformation(
-                        "Assignment cleanup completed. " +
-                        "{Count} assignments were closed.",
-                        result.Value);
-                }
             }
-          
             catch (OperationCanceledException)
                 when (stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation(
                     "Assignment deadline worker is stopping.");
+
+                break;
             }
             catch (Exception ex)
             {
@@ -58,9 +48,47 @@ namespace ElearningPlatform.Infrastructure.BackgroundServices
                     "An error occurred while closing expired assignments.");
             }
 
-            await Task.Delay(
-                TimeSpan.FromMinutes(1),
-                stoppingToken);
+            try
+            {
+                await timer.WaitForNextTickAsync(
+                    stoppingToken);
+            }
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
+        }
+
+        _logger.LogInformation(
+            "Assignment deadline worker stopped.");
+    }
+
+
+    private async Task CloseExpiredAssignmentsAsync(
+        CancellationToken cancellationToken)
+    {
+        using var scope = _scopeFactory.CreateScope();
+
+        var mediator = scope.ServiceProvider
+            .GetRequiredService<IMediator>();
+
+        var result = await mediator.Send(
+            new CloseExpiredAssignmentsCommand(),
+            cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation(
+                "Assignment cleanup completed. " +
+                "{Count} assignments were closed.",
+                result.Value);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "Assignment cleanup failed: {Message}",
+                result.Message);
         }
     }
 }

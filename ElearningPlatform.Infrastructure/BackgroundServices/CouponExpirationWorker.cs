@@ -1,69 +1,71 @@
-﻿using ElearningPlatform.Application.Common.Results;
-using ElearningPlatform.Application.Features.Coupons.Commands.DeactivateExpiredCoupons;
+﻿using ElearningPlatform.Application.Features.Coupons.Commands.DeactivateExpiredCoupons;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ElearningPlatform.Infrastructure.BackgroundServices
+public class CouponExpirationWorker : BackgroundService
 {
-    public class CouponExpirationWorker : BackgroundService
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<CouponExpirationWorker> _logger;
+
+    public CouponExpirationWorker(
+        IServiceScopeFactory scopeFactory,
+        ILogger<CouponExpirationWorker> logger)
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<CouponExpirationWorker> _logger;
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+    }
 
-        public CouponExpirationWorker(
-            IServiceScopeFactory scopeFactory,
-            ILogger<CouponExpirationWorker> logger)
-        {
-            _scopeFactory = scopeFactory;
-            _logger = logger;
-        }
+    protected override async Task ExecuteAsync(
+        CancellationToken stoppingToken)
+    {
+        using var timer =
+            new PeriodicTimer(TimeSpan.FromDays(1));
 
-        protected override async Task ExecuteAsync(
-            CancellationToken stoppingToken)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
-                {
-                    using var scope =
-                        _scopeFactory.CreateScope();
-
-                    var mediator =
-                        scope.ServiceProvider
-                            .GetRequiredService<IMediator>();
-
-                    var result =
-                        await mediator.Send(
-                            new DeactivateExpiredCouponsCommand(),
-                            stoppingToken);
-
-                    _logger.LogInformation(
-                        "Deactivated {Count} expired coupons.",
-                        result.Value);
-                }
-                catch (OperationCanceledException)
-                    when (stoppingToken.IsCancellationRequested)
-                {
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "Error while deactivating expired coupons.");
-                }
-
-                await Task.Delay(
-                    TimeSpan.FromMinutes(1),
+                await DeactivateExpiredCouponsAsync(
                     stoppingToken);
             }
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Error occurred while deactivating expired coupons.");
+            }
+
+            await timer.WaitForNextTickAsync(
+                stoppingToken);
         }
+
+        _logger.LogInformation(
+            "Coupon expiration worker is stopping.");
+    }
+
+    private async Task DeactivateExpiredCouponsAsync(
+        CancellationToken cancellationToken)
+    {
+        using var scope =
+            _scopeFactory.CreateScope();
+
+        var mediator =
+            scope.ServiceProvider
+                .GetRequiredService<IMediator>();
+
+        var result = await mediator.Send(
+            new DeactivateExpiredCouponsCommand(),
+            cancellationToken);
+
+        _logger.LogInformation(
+            "Expired coupon processing completed: {Message}",
+            result.Message);
     }
 }
